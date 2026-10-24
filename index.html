@@ -20,14 +20,15 @@
   --accent:#7aa2ff; --accent-ink:#0b1220; --dc:#f5b55e; --dc-bg:#3a2a14; --ac:#5fd3c4; --ac-bg:#12322f;
   --good:#4ade80; --warn:#f5b55e; --bad:#f87171; --unk:#53606d; --ghost:#2f3a45; color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
 .wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
 header .wrap{padding-block:12px;display:grid;gap:10px}
 .brandrow{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
 h1{font-family:var(--display);font-weight:700;font-size:26px;letter-spacing:.01em;margin:0;line-height:1}
-.src{font-size:12px;color:var(--muted);text-align:right}
+.src{font-size:12.5px;color:var(--muted);text-align:right;line-height:1.35}
+.src .fresh{color:var(--good);font-weight:600}
 .loc{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .loclabel{font-size:13px;color:var(--muted);flex:1 1 100%}
 .loclabel b{color:var(--ink);font-weight:600}
@@ -59,9 +60,9 @@ main .wrap{padding-block:16px 40px;display:grid;gap:12px}
 .addr{font-size:13px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
 .rings{grid-column:1 / -1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
 .ring{display:grid;justify-items:center;gap:4px;text-align:center;min-width:0}
-.ring svg{width:68px;height:68px;display:block}
-.ring .cls{font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.06em}
-.ring .kw{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;line-height:1.2}
+.ring svg{width:min(92px,100%);height:auto;display:block}
+.ring .cls{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:.06em}
+.ring .kw{font-size:13.5px;color:var(--muted);font-variant-numeric:tabular-nums;line-height:1.2}
 .ring.ghost .cls,.ring.ghost .kw{opacity:.45}
 .ring .num{font-family:var(--display);font-weight:700;font-size:24px;fill:var(--ink)}
 .ring.ghost .num{fill:var(--muted);opacity:.5}
@@ -84,7 +85,20 @@ details.settings p{color:var(--muted);font-size:13px;margin:8px 0;max-width:62ch
 .row{display:flex;flex-wrap:wrap;gap:8px}
 .row input{flex:1 1 240px}
 .empty{color:var(--muted);text-align:center;padding:24px 0}
-@media (max-width:420px){.card{grid-template-columns:58px 1fr}.dist{font-size:25px}}
+@media (max-width:560px){
+  .card{grid-template-columns:54px 1fr;padding:14px 12px;gap:4px 12px}
+  .dist{font-size:28px}
+  .name{font-size:18px}
+  .op,.addr,.loclabel,.summary{font-size:14.5px}
+  .price{font-size:15.5px}
+  .legend{font-size:13.5px}
+  .btn{font-size:15.5px;padding:10px 14px}
+  .chip{font-size:15px;padding:7px 14px}
+  select,input[type=text],input[type=password]{font-size:16px;padding:9px 10px}
+  .actions .btn{flex:1 1 auto;justify-content:center}
+  h1{font-size:28px}
+  .rings{gap:4px}
+}
 @media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}.card:hover{border-color:var(--muted)}}
 </style>
 
@@ -152,8 +166,8 @@ const $ = id => document.getElementById(id);
 const store = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 let here = null, hereLabel = '', mode = 'all', shown = 20, districts = {};
 
-function fmtDate(iso){ try{ return new Date(iso).toLocaleDateString('tr-TR',{day:'numeric',month:'short',year:'numeric'}) }catch(e){ return iso } }
-function setSrc(live){ $('src').textContent = (live ? 'EPDK verisi, güncel · ' : 'EPDK verisi · ') + fmtDate(dataDate) + ' · ' + st.length.toLocaleString('tr-TR') + ' istasyon'; }
+function fmtDate(iso){ try{ return new Date(iso).toLocaleDateString('tr-TR',{day:'numeric',month:'long'}) }catch(e){ return iso } }
+function setSrc(live){ $('src').innerHTML = (live ? '<b class="fresh">● Güncel</b> ' : 'Kayıtlı kopya · ') + fmtDate(dataDate) + '<br>' + st.length.toLocaleString('tr-TR') + ' istasyon · EPDK'; }
 
 function parseAddr(a){
   const m = /([^\s\/]+)\s*\/\s*([^\/]+?)\s*$/.exec(a || '');
@@ -385,7 +399,8 @@ async function refresh(){
     const ctl = new AbortController(); setTimeout(()=>ctl.abort(), 20000);
     const get = f => fetch(REMOTE + f, {signal: ctl.signal}).then(r => { if(!r.ok) throw 0; return r.json(); });
     const [S, P, B] = await Promise.all([get('stations.json'), get('prices.json'), get('brands.json')]);
-    if(!S.stations || S.generatedAt <= dataDate) return;
+    if(!S.stations) return;
+    if(S.generatedAt <= dataDate){ setSrc(true); return; }
     const bm = Object.fromEntries(B.map(b => [b.slug, b]));
     const slugs = [...new Set(S.stations.map(s => s.brand))].sort();
     const tar = t => t.pricePerKwh != null ? [t.pricePerKwh, t.pricePerKwh] : (t.priceMin != null ? [t.priceMin, t.priceMax ?? t.priceMin] : null);
