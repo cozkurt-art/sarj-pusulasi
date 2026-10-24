@@ -314,12 +314,17 @@ async function liveCheck(btn){
   out.textContent = 'Google sorgulanıyor…'; btn.disabled = true;
   try{
     const r = await fetch('https://places.googleapis.com/v1/places:searchNearby', {method:'POST', headers:{'Content-Type':'application/json','X-Goog-Api-Key':key,'X-Goog-FieldMask':'places.displayName,places.evChargeOptions'},
-      body: JSON.stringify({includedTypes:['electric_vehicle_charging_station'], maxResultCount:1, rankPreference:'DISTANCE', locationRestriction:{circle:{center:{latitude:lat,longitude:lng},radius:150}}})});
+      body: JSON.stringify({includedTypes:['electric_vehicle_charging_station'], maxResultCount:5, rankPreference:'DISTANCE', locationRestriction:{circle:{center:{latitude:lat,longitude:lng},radius:250}}})});
     const j = await r.json();
     if(!r.ok) throw new Error(j.error && j.error.message || ('HTTP ' + r.status));
-    const p = j.places && j.places[0];
-    const ag = p && p.evChargeOptions && p.evChargeOptions.connectorAggregation;
-    if(!ag || !ag.length){ out.innerHTML = 'Google bu istasyon için canlı soket verisi vermiyor.'; return; }
+    const places = j.places || [];
+    if(!places.length){ out.innerHTML = 'Google bu konumun 250 m çevresinde kayıtlı şarj istasyonu bulamadı.'; return; }
+    const withAg = places.filter(x => x.evChargeOptions && x.evChargeOptions.connectorAggregation && x.evChargeOptions.connectorAggregation.length);
+    const withLive = withAg.filter(x => x.evChargeOptions.connectorAggregation.some(a => a.availableCount != null));
+    const p = withLive[0] || withAg[0];
+    const names = places.map(x => x.displayName ? esc(x.displayName.text) : '?').join(', ');
+    if(!p){ out.innerHTML = `Google yakında ${places.length} istasyon buldu (${names}), hiçbiri için soket bilgisi vermiyor.`; return; }
+    const ag = p.evChargeOptions.connectorAggregation;
     const hasLive = ag.some(a => a.availableCount != null);
     const acc = {ac:null, dc:null, hpc:null};
     for(const a of ag){
