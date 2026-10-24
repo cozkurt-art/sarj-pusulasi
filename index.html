@@ -84,6 +84,9 @@ details.settings summary{cursor:pointer;font-weight:600}
 details.settings p{color:var(--muted);font-size:13px;margin:8px 0;max-width:62ch}
 .row{display:flex;flex-wrap:wrap;gap:8px}
 .row input{flex:1 1 240px}
+.toggle{display:flex;align-items:center;gap:10px;margin:4px 0 10px;font-weight:500;cursor:pointer}
+.toggle input{width:20px;height:20px;accent-color:var(--accent)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14.5px;z-index:20;max-width:calc(100% - 32px);text-align:center}
 .empty{color:var(--muted);text-align:center;padding:24px 0}
 @media (max-width:560px){
   .card{grid-template-columns:54px 1fr;padding:14px 12px;gap:4px 12px}
@@ -148,8 +151,9 @@ details.settings p{color:var(--muted);font-size:13px;margin:8px 0;max-width:62ch
     <button class="btn more" id="more" type="button" hidden>20 istasyon daha göster</button>
     <details class="settings">
       <summary>Canlı soket durumu (isteğe bağlı)</summary>
-      <p>EPDK verisi anlık doluluğu içermez. Ücretsiz yol: kartlardaki <b>Maps'te gör</b> ile istasyonu Google Maps'te açın (çoğu istasyonda boş soket sayısı orada görünür) ya da operatörün uygulamasını açın.</p>
-      <p>İsterseniz kendi Google Places API anahtarınızı girin; kartlarda <b>Canlı durumu sorgula</b> düğmesi çıkar. Sorgu yalnızca siz bastığınızda yapılır. Google aylık ücretsiz kotanın üstünü ücretlendirir ve faturalandırma hesabı ister. Anahtar yalnızca bu tarayıcıda saklanır. Bu özellik sayfa kendi adresinizden (ör. GitHub Pages) açıldığında çalışır.</p>
+      <p>EPDK verisi anlık doluluğu içermez. Ücretsiz yollar: kartlardaki <b>ABRP'de aç</b> (istasyon adı kopyalanır, ABRP'de aramaya yapıştırın), <b>Maps'te gör</b> ya da operatörün uygulaması.</p>
+      <p><b>Google canlı sorgusu:</b> Google şu an Türkiye için soket verisi vermiyor. Anahtar kayıtlı kalsın; Google veri vermeye başlarsa anahtarı açarak tekrar deneyebilirsiniz. Kapalıyken hiç sorgu yapılmaz, ücret oluşmaz.</p>
+      <label class="toggle"><input type="checkbox" id="gon"> Google canlı sorgusunu kartlarda göster</label>
       <div class="row">
         <input type="password" id="gkey" placeholder="Google Places API anahtarı" aria-label="Google Places API anahtarı" autocomplete="off">
         <button class="btn" id="gkeySave" type="button">Kaydet</button>
@@ -237,8 +241,8 @@ function render(){
   const rows = filtered().map(s => [hav(here[0], here[1], s[3], s[4]), s]).sort((a,b)=>a[0]-b[0]);
   $('summary').textContent = rows.length ? `${rows.length.toLocaleString('tr-TR')} istasyon, en yakını ${fmtKm(rows[0][0])}. Mesafe kuş uçuşu.` : '';
   if(!rows.length){ list.innerHTML = '<div class="empty">Bu filtrelerle istasyon yok. Filtreleri gevşetin.</div>'; $('more').hidden = true; return; }
-  const key = store.get('sp_gkey');
-  list.innerHTML = rows.slice(0, shown).map(([d, s], i) => card(d, s, i, !!key)).join('');
+  const key = store.get('sp_gkey'), gon = store.get('sp_gon') !== '0';
+  list.innerHTML = rows.slice(0, shown).map(([d, s], i) => card(d, s, i, !!key && gon)).join('');
   list.style.display = 'grid'; list.style.gap = '12px';
   $('more').hidden = rows.length <= shown;
 }
@@ -301,6 +305,7 @@ function card(d, s, i, hasKey){
     <div class="actions">
       <a class="btn primary" href="${dir}" target="_blank" rel="noopener">Yol tarifi</a>
       <a class="btn" href="${seeLl}" target="_blank" rel="noopener">Maps'te gör</a>
+      <a class="btn" href="https://abetterrouteplanner.com/" target="_blank" rel="noopener" data-abrp="${esc(s[0] + ' ' + name)}">ABRP'de aç</a>
       ${app ? `<a class="btn" href="${app}" target="_blank" rel="noopener">${esc(name)} uygulaması</a>` : ''}
       ${hasKey ? `<button class="btn" type="button" data-live="${i}" data-ll="${ll}">Canlı durumu sorgula</button>` : ''}
     </div>
@@ -390,6 +395,15 @@ $('brand').addEventListener('change', () => { shown = 20; render(); });
 $('more').addEventListener('click', () => { shown += 20; render(); });
 $('list').addEventListener('click', e => { const b = e.target.closest('[data-live]'); if(b) liveCheck(b); });
 $('gkey').value = store.get('sp_gkey') || '';
+$('gon').checked = store.get('sp_gon') !== '0';
+$('gon').addEventListener('change', e => { store.set('sp_gon', e.target.checked ? '1' : '0'); render(); });
+function toast(msg){ let el = document.querySelector('.toast'); if(!el){ el = document.createElement('div'); el.className = 'toast'; el.setAttribute('role','status'); document.body.appendChild(el); } el.textContent = msg; el.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => el.hidden = true, 3500); }
+$('list').addEventListener('click', e => {
+  const a = e.target.closest('[data-abrp]'); if(!a) return;
+  const txt = a.dataset.abrp;
+  try{ navigator.clipboard.writeText(txt).then(() => toast('İstasyon adı kopyalandı. ABRP\'de arama kutusuna yapıştırın.'), () => toast('ABRP\'de şunu arayın: ' + txt)); }
+  catch(err){ toast('ABRP\'de şunu arayın: ' + txt); }
+});
 $('gkeySave').addEventListener('click', () => { store.set('sp_gkey', $('gkey').value.trim()); $('gkeySave').textContent = 'Kaydedildi'; setTimeout(()=>$('gkeySave').textContent='Kaydet', 1500); render(); });
 
 function fillBrands(){
