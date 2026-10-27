@@ -1,4 +1,18 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Şarj Pusulası</title>
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17202a" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Şarj Pusulası">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
@@ -104,6 +118,49 @@ details.settings p{color:var(--muted);font-size:13px;margin:8px 0;max-width:62ch
   .rings{gap:4px}
 }
 @media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}.card:hover{border-color:var(--muted)}}
+/* App-like mobile layer */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;-webkit-tap-highlight-color:transparent}
+.filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px;padding-bottom:2px}
+.filters::-webkit-scrollbar{display:none}
+.filters>*{flex:0 0 auto}
+#brand{flex:0 0 auto;width:auto;max-width:230px}
+.ring .num .of{fill:var(--muted);font-weight:600}
+.live .meta{color:var(--muted)}
+.linkbtn{border:0;background:none;padding:6px 4px;margin-left:4px;color:var(--accent);font-weight:600;font-size:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+@media (max-width:560px){
+  body{font-size:17px}
+  header{position:static}
+  header .wrap{padding-block:12px;gap:10px}
+  h1{font-size:26px}
+  .src{font-size:12px}
+  .loc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .loclabel,.panel,.msg{grid-column:1 / -1}
+  .loc .btn{justify-content:center;padding:8px 6px;font-size:15.5px;min-height:46px;border-radius:12px}
+  .panel .btn{min-height:44px}
+  .chip{min-height:42px;font-size:15.5px}
+  #minkw,#brand{min-height:42px;font-size:15.5px;border-radius:999px;padding-inline:12px}
+  main .wrap{padding-block:12px calc(32px + env(safe-area-inset-bottom,0px))}
+  .legend{font-size:13px;gap:4px 12px}
+  .card{border-radius:18px;padding:16px 14px;grid-template-columns:62px 1fr;gap:4px 12px}
+  .dist{font-size:36px}
+  .dist small{font-size:13px}
+  .dist .how{font-size:13px}
+  .name{font-size:19px}
+  .op,.addr{font-size:15px}
+  .price{font-size:15.5px}
+  .rings{gap:6px;margin-top:14px;padding-top:14px}
+  .ring svg{width:min(104px,100%)}
+  .ring .cls{font-size:18px}
+  .ring .kw{font-size:14.5px}
+  .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+  .actions .btn{min-height:48px;justify-content:center;font-size:15.5px;border-radius:12px;white-space:normal;text-align:center;line-height:1.15;padding:8px 10px}
+  .actions .btn.primary{grid-column:1 / -1;min-height:54px;font-size:17px;font-weight:600}
+  .actions .btn:last-child:nth-child(even){grid-column:1 / -1}
+  .live{font-size:14.5px;margin-top:8px}
+  details.settings{border-radius:18px;font-size:16px}
+  details.settings p{font-size:15px}
+}
 </style>
 
 <header>
@@ -114,9 +171,9 @@ details.settings p{color:var(--muted);font-size:13px;margin:8px 0;max-width:62ch
     </div>
     <div class="loc">
       <div class="loclabel" id="loclabel">Konum: <b>—</b></div>
-      <button class="btn primary" id="gps" type="button">Konumumu kullan</button>
-      <button class="btn" id="pickBtn" type="button" aria-expanded="false">İl / ilçe seç</button>
-      <button class="btn" id="coordBtn" type="button" aria-expanded="false">Koordinat yapıştır</button>
+      <button class="btn primary" id="gps" type="button">Konumum</button>
+      <button class="btn" id="pickBtn" type="button" aria-expanded="false">İl / ilçe</button>
+      <button class="btn" id="coordBtn" type="button" aria-expanded="false">Koordinat</button>
       <div class="panel" id="pickPanel">
         <select id="il" aria-label="İl"></select>
         <select id="ilce" aria-label="İlçe"></select>
@@ -153,8 +210,8 @@ details.settings p{color:var(--muted);font-size:13px;margin:8px 0;max-width:62ch
     <details class="settings">
       <summary>Canlı soket durumu (isteğe bağlı)</summary>
       <p>EPDK verisi anlık doluluğu içermez. Ücretsiz yollar: kartlardaki <b>ABRP'de aç</b> (istasyon adı kopyalanır, ABRP'de aramaya yapıştırın), <b>Maps'te gör</b> ya da operatörün uygulaması.</p>
-      <p><b>Google canlı sorgusu:</b> Google şu an Türkiye için soket verisi vermiyor. Anahtar kayıtlı kalsın; Google veri vermeye başlarsa anahtarı açarak tekrar deneyebilirsiniz. Kapalıyken hiç sorgu yapılmaz, ücret oluşmaz.</p>
-      <label class="toggle"><input type="checkbox" id="gon"> Google canlı sorgusunu kartlarda göster</label>
+      <p><b>Google canlı sorgusu:</b> Anahtar kayıtlı ve aşağıdaki seçenek açıkken ekrana gelen istasyonların doluluğu kendiliğinden sorgulanır. Aynı istasyon en fazla 3 dakikada bir, sayfa açılışı başına en çok 40 kez sorulur. Canlı veriyi yalnızca Google'a veri gönderen operatörler verir; diğerlerinde halka gri kalır. Kapalıyken hiç sorgu yapılmaz, ücret oluşmaz.</p>
+      <label class="toggle"><input type="checkbox" id="gon"> Canlı doluluğu otomatik sorgula</label>
       <div class="row">
         <input type="password" id="gkey" placeholder="Google Places API anahtarı" aria-label="Google Places API anahtarı" autocomplete="off">
         <button class="btn" id="gkeySave" type="button">Kaydet</button>
@@ -258,7 +315,9 @@ function render(){
   }
   $('summary').textContent = note;
   const key = store.get('sp_gkey'), gon = store.get('sp_gon') !== '0';
+  rows.slice(0, shown).forEach(([, s]) => stByLl.set(s[3] + ',' + s[4], s));
   list.innerHTML = rows.slice(0, shown).map(([d, s], i) => card(d, s, i, !!key && gon, road && road.ok ? road.m.get(s) : null)).join('');
+  observeLive();
   list.style.display = 'grid'; list.style.gap = '12px';
   $('more').hidden = rows.length <= shown;
 }
@@ -289,7 +348,7 @@ function ring(cls, n, kw, lv){
     return `<div class="ring ghost" aria-label="${cls}: soket yok"><svg viewBox="0 0 68 68" aria-hidden="true"><circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="var(--ghost)" stroke-width="2" stroke-dasharray="3 5"/><text class="num" x="${C}" y="${C + 8}" text-anchor="middle">0</text></svg><div class="cls">${cls}</div><div class="kw">yok</div></div>`;
   }
   let free = null;
-  if(lv && lv.avail != null) free = Math.max(0, Math.min(n, lv.avail));
+  if(lv && lv.avail != null){ if(lv.count) n = lv.count; free = Math.max(0, Math.min(n, lv.avail)); }
   const color = i => free == null ? 'var(--unk)' : (i < free ? 'var(--good)' : 'var(--bad)');
   let arcs = '';
   if(n === 1){
@@ -307,8 +366,9 @@ function ring(cls, n, kw, lv){
       (f ? `<circle cx="${C}" cy="${C}" r="${R}" fill="none" stroke="var(--good)" stroke-width="${W}" stroke-dasharray="${(L * f).toFixed(1)} ${L}" transform="rotate(-90 ${C} ${C})"/>` : '');
   }
   const state = free == null ? 'durum bilinmiyor' : `${free} boş, ${n - free} dolu veya arızalı`;
-  const sub = free == null ? (kw ? kw + ' kW' : '') : `${free}/${n} boş`;
-  return `<div class="ring" aria-label="${cls}: ${n} soket, ${state}"><svg viewBox="0 0 68 68" aria-hidden="true">${arcs}<text class="num" x="${C}" y="${C + 8}" text-anchor="middle">${n}</text></svg><div class="cls">${cls}</div><div class="kw">${sub}</div></div>`;
+  const sub = free == null ? (kw ? kw + ' kW' : '') : (kw ? kw + ' kW · ' : '') + (free ? free + ' boş' : 'boş yok') + (lv.oos ? ', ' + lv.oos + ' arızalı' : '');
+  const label = free == null ? String(n) : `${free}<tspan class="of">/${n}</tspan>`, fs = free == null ? 24 : (String(free).length + String(n).length > 3 ? 16 : 21);
+  return `<div class="ring" aria-label="${cls}: ${n} soket, ${state}"><svg viewBox="0 0 68 68" aria-hidden="true">${arcs}<text class="num" x="${C}" y="${C + fs / 3}" text-anchor="middle" style="font-size:${fs}px">${label}</text></svg><div class="cls">${cls}</div><div class="kw">${sub}</div></div>`;
 }
 function fmtKm(d){ return d < 1 ? Math.round(d*1000) + ' m' : d.toLocaleString('tr-TR',{maximumFractionDigits: d < 10 ? 1 : 0}) + ' km'; }
 
@@ -317,8 +377,7 @@ function card(d0, s, i, hasKey, rd){
   const b = brands[s[1]], [name, , , note, ios, android] = b;
   const big = d < 1 ? Math.round(d*1000) : d.toLocaleString('tr-TR',{maximumFractionDigits: d < 10 ? 1 : 0});
   const unit = d < 1 ? 'M' : 'KM';
-  const lv = live[s[3] + ',' + s[4]];
-  const rings = ring('AC', s[5], s[6], lv && lv.ac) + ring('DC', s[7], s[8], lv && lv.dc) + ring('HPC', s[9], s[10], lv && lv.hpc);
+  const rings = ringsFor(s);
   const pAc = s[5] ? priceText(s[1], 'ac') : null, pDc = (s[7] || s[9]) ? priceText(s[1], 'dc') : null;
   let price;
   if(pAc || pDc){
@@ -330,7 +389,7 @@ function card(d0, s, i, hasKey, rd){
   const seeLl = 'https://www.google.com/maps/search/?api=1&query=' + ll;
   const abrp = 'https://abetterrouteplanner.com/?lat=' + s[3] + '&lon=' + s[4] + '&destinations=' + encodeURIComponent(JSON.stringify([{address: s[0] + ', ' + name, lat: s[3], lon: s[4]}]));
   const app = /iPhone|iPad|iPod/.test(navigator.userAgent) ? (ios || android) : (android || ios);
-  return `<article class="card">
+  return `<article class="card" data-ll="${ll}">
     <div class="dist">${big}<small>${unit}</small><span class="how">${rd ? 'yol · ' + fmtMin(rd[1]) : 'kuş uçuşu'}</span></div>
     <div class="info">
       <h2 class="name">${esc(s[0])}</h2>
@@ -344,51 +403,93 @@ function card(d0, s, i, hasKey, rd){
       <a class="btn" href="${seeLl}" target="_blank" rel="noopener">Maps'te gör</a>
       <a class="btn" href="${abrp}" target="_blank" rel="noopener" data-abrp="${esc(s[0] + ' ' + name)}">ABRP'de aç</a>
       ${app ? `<a class="btn" href="${app}" target="_blank" rel="noopener">${esc(name)} uygulaması</a>` : ''}
-      ${hasKey ? `<button class="btn" type="button" data-live="${i}" data-ll="${ll}">Canlı durumu sorgula</button>` : ''}
     </div>
-    <div class="live" id="live${i}">${liveText[ll] || ''}</div>
+    <div class="live">${liveText[ll] || ''}</div>
   </article>`;
 }
 
 const TYPE = {EV_CONNECTOR_TYPE_CCS_COMBO_2:'CCS', EV_CONNECTOR_TYPE_TYPE_2:'Type 2', EV_CONNECTOR_TYPE_CHADEMO:'CHAdeMO', EV_CONNECTOR_TYPE_TESLA:'Tesla', EV_CONNECTOR_TYPE_CCS_COMBO_1:'CCS1'};
-async function liveCheck(btn){
-  const out = $('live' + btn.dataset.live), [lat, lng] = btn.dataset.ll.split(',').map(Number), key = store.get('sp_gkey');
-  out.textContent = 'Google sorgulanıyor…'; btn.disabled = true;
+// --- Live availability: queried automatically when a card comes into view, cached for 3 minutes
+const stByLl = new Map();
+function ringsFor(s){ const lv = live[s[3] + ',' + s[4]]; return ring('AC', s[5], s[6], lv && lv.ac) + ring('DC', s[7], s[8], lv && lv.dc) + ring('HPC', s[9], s[10], lv && lv.hpc); }
+const fold = t => String(t || '').toLocaleLowerCase('tr-TR').replace(/[çğıöşüâî]/g, c => ({'ç':'c','ğ':'g','ı':'i','ö':'o','ş':'s','ü':'u','â':'a','î':'i'}[c])).replace(/[^a-z0-9]/g, '');
+function brandMatch(brandName, placeName){
+  const p = fold(placeName), first = fold(String(brandName || '').trim().split(/\s+/)[0]), all = fold(brandName);
+  return (first.length >= 3 && p.includes(first)) || (all.length >= 3 && p.includes(all));
+}
+const LIVE_TTL = 3 * 60 * 1000, LIVE_MAX = 40, livePending = new Set(), liveQueue = [];
+let liveUsed = 0, liveActive = 0, liveObs = null;
+const liveEnabled = () => !!store.get('sp_gkey') && store.get('sp_gon') !== '0';
+function queueLive(ll, force){
+  if(!ll || !liveEnabled() || livePending.has(ll)) return;
+  const c = live[ll];
+  if(!force && c && Date.now() - c.at < LIVE_TTL) return;
+  if(!force && liveUsed >= LIVE_MAX) return;
+  livePending.add(ll); liveQueue.push(ll); pumpLive();
+}
+function pumpLive(){
+  while(liveActive < 3 && liveQueue.length){
+    const ll = liveQueue.shift(); liveActive++; liveUsed++;
+    fetchLive(ll).finally(() => { liveActive--; livePending.delete(ll); pumpLive(); });
+  }
+}
+function observeLive(){
+  if(liveObs){ liveObs.disconnect(); liveObs = null; }
+  if(!liveEnabled()) return;
+  const cards = [...document.querySelectorAll('#list article.card')];
+  if(!('IntersectionObserver' in window)){ cards.slice(0, 5).forEach(el => queueLive(el.dataset.ll)); return; }
+  liveObs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ queueLive(e.target.dataset.ll); liveObs.unobserve(e.target); } }), {rootMargin: '150px 0px'});
+  cards.forEach(el => liveObs.observe(el));
+}
+function paintLive(ll){
+  const s = stByLl.get(ll); if(!s) return;
+  document.querySelectorAll('#list article.card').forEach(el => {
+    if(el.dataset.ll !== ll) return;
+    el.querySelector('.rings').innerHTML = ringsFor(s);
+    el.querySelector('.live').innerHTML = liveText[ll] || '';
+  });
+}
+const hhmm = iso => new Date(iso).toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'});
+async function fetchLive(ll){
+  const s = stByLl.get(ll), [lat, lng] = ll.split(',').map(Number), key = store.get('sp_gkey');
+  const bname = s ? brands[s[1]][0] : '';
+  const refresh = `<button class="linkbtn" type="button" data-refresh="${ll}">Yenile</button>`;
+  if(!live[ll]){ liveText[ll] = '<span class="meta">Canlı durum alınıyor…</span>'; paintLive(ll); }
   try{
-    const r = await fetch('https://places.googleapis.com/v1/places:searchNearby', {method:'POST', headers:{'Content-Type':'application/json','X-Goog-Api-Key':key,'X-Goog-FieldMask':'places.displayName,places.evChargeOptions'},
-      body: JSON.stringify({includedTypes:['electric_vehicle_charging_station'], maxResultCount:5, rankPreference:'DISTANCE', locationRestriction:{circle:{center:{latitude:lat,longitude:lng},radius:250}}})});
+    const r = await fetch('https://places.googleapis.com/v1/places:searchNearby', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Goog-Api-Key': key, 'X-Goog-FieldMask': 'places.displayName,places.evChargeOptions'},
+      body: JSON.stringify({includedTypes: ['electric_vehicle_charging_station'], maxResultCount: 10, rankPreference: 'DISTANCE', locationRestriction: {circle: {center: {latitude: lat, longitude: lng}, radius: 200}}})});
     const j = await r.json();
     if(!r.ok) throw new Error(j.error && j.error.message || ('HTTP ' + r.status));
-    const places = j.places || [];
-    if(!places.length){ out.innerHTML = 'Google bu konumun 250 m çevresinde kayıtlı şarj istasyonu bulamadı.'; return; }
-    const withAg = places.filter(x => x.evChargeOptions && x.evChargeOptions.connectorAggregation && x.evChargeOptions.connectorAggregation.length);
-    const withLive = withAg.filter(x => x.evChargeOptions.connectorAggregation.some(a => a.availableCount != null));
-    const p = withLive[0] || withAg[0];
-    const names = places.map(x => x.displayName ? esc(x.displayName.text) : '?').join(', ');
-    if(!p){ out.innerHTML = `Google yakında ${places.length} istasyon buldu (${names}), hiçbiri için soket bilgisi vermiyor.`; return; }
-    const ag = p.evChargeOptions.connectorAggregation;
-    const hasLive = ag.some(a => a.availableCount != null);
-    const acc = {ac:null, dc:null, hpc:null};
-    for(const a of ag){
-      const k = a.type === 'EV_CONNECTOR_TYPE_TYPE_2' || a.type === 'EV_CONNECTOR_TYPE_J1772' ? 'ac' : ((a.maxChargeRateKw || 0) >= 150 ? 'hpc' : 'dc');
-      if(a.availableCount == null) continue;
-      acc[k] = {avail: (acc[k] ? acc[k].avail : 0) + a.availableCount};
+    const places = (j.places || []).filter(x => x.evChargeOptions && x.evChargeOptions.connectorAggregation && x.evChargeOptions.connectorAggregation.length);
+    const mine = places.filter(x => brandMatch(bname, x.displayName && x.displayName.text));
+    const p = mine[0] || (places.length === 1 ? places[0] : null);
+    if(!p){
+      live[ll] = {at: Date.now()};
+      liveText[ll] = `<span class="meta">${places.length ? 'Google\'da bu operatöre ait kayıt eşleşmedi.' : 'Google bu istasyon için soket bilgisi vermiyor.'}</span>`;
+      return;
     }
-    live[btn.dataset.ll] = acc;
-    out.innerHTML = (p.displayName ? esc(p.displayName.text) + ': ' : '') + ag.map(a => {
-      const t = (TYPE[a.type] || 'Soket') + (a.maxChargeRateKw ? ' ' + Math.round(a.maxChargeRateKw) + ' kW' : '');
-      if(a.availableCount == null) return `${t}: ${a.count} soket`;
-      const cls = a.availableCount > 0 ? 'ok' : 'no';
-      return `${t}: <span class="${cls}">${a.availableCount}/${a.count} boş</span>${a.outOfServiceCount ? `, ${a.outOfServiceCount} arızalı` : ''}`;
-    }).join(' · ') + (hasLive ? '' : ' · canlı doluluk yok');
-    const ts = ag.map(a => a.availabilityLastUpdateTime).filter(Boolean).sort().pop();
-    if(ts) out.innerHTML += ` <span style="color:var(--muted)">(güncelleme ${new Date(ts).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})})</span>`;
-    liveText[btn.dataset.ll] = out.innerHTML;
-    if(hasLive){ const sc = window.scrollY; render(); window.scrollTo(0, sc); }
+    const acc = {ac: null, dc: null, hpc: null};
+    for(const a of p.evChargeOptions.connectorAggregation){
+      if(a.availableCount == null) continue;
+      let k = a.type === 'EV_CONNECTOR_TYPE_TYPE_2' || a.type === 'EV_CONNECTOR_TYPE_J1772' ? 'ac' : ((a.maxChargeRateKw || 0) >= 150 ? 'hpc' : 'dc');
+      if(s){ if(k === 'hpc' && !s[9] && s[7]) k = 'dc'; else if(k === 'dc' && !s[7] && s[9]) k = 'hpc'; }
+      const o = acc[k] || (acc[k] = {avail: 0, count: 0, oos: 0});
+      o.avail += a.availableCount; o.count += a.count || 0; o.oos += a.outOfServiceCount || 0;
+    }
+    const ts = p.evChargeOptions.connectorAggregation.map(a => a.availabilityLastUpdateTime).filter(Boolean).sort().pop();
+    live[ll] = Object.assign({at: Date.now()}, acc);
+    liveText[ll] = (acc.ac || acc.dc || acc.hpc)
+      ? `<span class="meta">Canlı · Google${ts ? ' · ' + hhmm(ts) : ''}</span>${refresh}`
+      : `<span class="meta">Bu operatör canlı doluluk paylaşmıyor.</span>`;
   }catch(e){
-    out.textContent = /Failed to fetch|NetworkError|Load failed/i.test(e.message) ? 'Bu görünümden Google\'a ulaşılamıyor. Sayfayı kendi adresinizden açın.' : 'Google hatası: ' + e.message;
-  }finally{ btn.disabled = false; }
+    live[ll] = {at: Date.now()};
+    const m = e.message || '';
+    liveText[ll] = '<span class="meta">' + (/referer|referrer/i.test(m) ? 'Google anahtarı bu adrese izin vermiyor (anahtar kısıtlamasına sitenin adresini ekleyin).'
+      : /quota|exhausted|rate/i.test(m) ? 'Günlük Google sorgu sınırı doldu.'
+      : /Failed to fetch|NetworkError|Load failed/i.test(m) ? 'Google\'a ulaşılamadı.' : 'Google hatası: ' + esc(m)) + '</span>' + refresh;
+  }finally{ paintLive(ll); }
 }
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && here){ liveUsed = 0; const sc = window.scrollY; render(); window.scrollTo(0, sc); } });
 
 function parseCoord(t){
   const m = /(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/.exec(t);
@@ -403,10 +504,10 @@ $('gps').addEventListener('click', () => {
   if(!navigator.geolocation){ showMsg('Tarayıcı konum vermiyor. İl / ilçe seçin.'); return; }
   $('gps').textContent = 'Konum alınıyor…';
   navigator.geolocation.getCurrentPosition(p => {
-    $('gps').textContent = 'Konumumu kullan';
+    $('gps').textContent = 'Konumum';
     setHere(p.coords.latitude, p.coords.longitude, 'Bulunduğunuz yer');
   }, () => {
-    $('gps').textContent = 'Konumumu kullan';
+    $('gps').textContent = 'Konumum';
     showMsg('Konum alınamadı. Bu görünümde konum kapalı olabilir: il / ilçe seçin, koordinat yapıştırın veya sayfayı kendi adresinizden açın.');
   }, {enableHighAccuracy:true, timeout:10000, maximumAge:60000});
 });
@@ -430,7 +531,7 @@ document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () =
 $('minkw').addEventListener('change', () => { shown = 20; render(); });
 $('brand').addEventListener('change', () => { shown = 20; render(); });
 $('more').addEventListener('click', () => { shown += 20; render(); });
-$('list').addEventListener('click', e => { const b = e.target.closest('[data-live]'); if(b) liveCheck(b); });
+$('list').addEventListener('click', e => { const b = e.target.closest('[data-refresh]'); if(b) queueLive(b.dataset.refresh, true); });
 $('gkey').value = store.get('sp_gkey') || '';
 $('gon').checked = store.get('sp_gon') !== '0';
 $('gon').addEventListener('change', e => { store.set('sp_gon', e.target.checked ? '1' : '0'); render(); });
