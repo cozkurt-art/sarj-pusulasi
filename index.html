@@ -210,7 +210,7 @@ body{margin:0;-webkit-tap-highlight-color:transparent}
     <details class="settings">
       <summary>Canlı soket durumu (isteğe bağlı)</summary>
       <p>EPDK verisi anlık doluluğu içermez. Ücretsiz yollar: kartlardaki <b>ABRP'de aç</b> (istasyon adı kopyalanır, ABRP'de aramaya yapıştırın), <b>Maps'te gör</b> ya da operatörün uygulaması.</p>
-      <p><b>Google canlı sorgusu:</b> Anahtar kayıtlı ve aşağıdaki seçenek açıkken ekrana gelen istasyonların doluluğu kendiliğinden sorgulanır. Aynı istasyon en fazla 3 dakikada bir, sayfa açılışı başına en çok 40 kez sorulur. Canlı veriyi yalnızca Google'a veri gönderen operatörler verir; diğerlerinde halka gri kalır. Kapalıyken hiç sorgu yapılmaz, ücret oluşmaz.</p>
+      <p><b>Google canlı sorgusu:</b> Anahtar kayıtlı ve aşağıdaki seçenek açıkken ekrana gelen istasyonların doluluğu kendiliğinden sorgulanır. Otomatik olarak yalnızca en yakın 3 istasyon sorulur, diğerleri için karttaki bağlantıya dokunun. Aynı istasyon 5 dakika içinde tekrar sorulmaz ve günde en çok 30 sorgu yapılır; böylece Google'ın aylık 1.000 ücretsiz sorgusu aşılmaz. Canlı veri paylaşmadığı görülen operatörler 7 gün boyunca otomatik sorulmaz. Canlı veriyi yalnızca Google'a veri gönderen operatörler verir; diğerlerinde halka gri kalır. Kapalıyken hiç sorgu yapılmaz, ücret oluşmaz.</p>
       <label class="toggle"><input type="checkbox" id="gon"> Canlı doluluğu otomatik sorgula</label>
       <div class="row">
         <input type="password" id="gkey" placeholder="Google Places API anahtarı" aria-label="Google Places API anahtarı" autocomplete="off">
@@ -404,7 +404,7 @@ function card(d0, s, i, hasKey, rd){
       <a class="btn" href="${abrp}" target="_blank" rel="noopener" data-abrp="${esc(s[0] + ' ' + name)}">ABRP'de aç</a>
       ${app ? `<a class="btn" href="${app}" target="_blank" rel="noopener">${esc(name)} uygulaması</a>` : ''}
     </div>
-    <div class="live">${liveText[ll] || ''}</div>
+    <div class="live">${liveText[ll] || (liveEnabled() ? `<button class="linkbtn" type="button" data-refresh="${ll}">Canlı durumu göster</button>` : '')}</div>
   </article>`;
 }
 
@@ -417,29 +417,40 @@ function brandMatch(brandName, placeName){
   const p = fold(placeName), first = fold(String(brandName || '').trim().split(/\s+/)[0]), all = fold(brandName);
   return (first.length >= 3 && p.includes(first)) || (all.length >= 3 && p.includes(all));
 }
-const LIVE_TTL = 3 * 60 * 1000, LIVE_MAX = 40, livePending = new Set(), liveQueue = [];
-let liveUsed = 0, liveActive = 0, liveObs = null;
+// Free tier: Google gives 1,000 of these lookups a month, so the page stays under 30 a day
+const LIVE_TTL = 5 * 60 * 1000, AUTO_N = 3, DAILY_MAX = 30, NOLIVE_DAYS = 7, livePending = new Set(), liveQueue = [];
+let liveActive = 0;
 const liveEnabled = () => !!store.get('sp_gkey') && store.get('sp_gon') !== '0';
+const jget = (k, d) => { try{ return JSON.parse(store.get(k)) || d; }catch(e){ return d; } };
+const today = () => new Date().toLocaleDateString('sv-SE');
+function quotaLeft(){ const q = jget('sp_lday', {}); return q.d === today() ? DAILY_MAX - q.n : DAILY_MAX; }
+function useQuota(){ const q = jget('sp_lday', {}), d = today(); store.set('sp_lday', JSON.stringify({d, n: (q.d === d ? q.n : 0) + 1})); }
+function noLive(brand){ const t = jget('sp_nolive', {})[brand]; return t && Date.now() - t < NOLIVE_DAYS * 864e5; }
+function setNoLive(brand, on){ const m = jget('sp_nolive', {}); if(on) m[brand] = Date.now(); else delete m[brand]; store.set('sp_nolive', JSON.stringify(m)); }
+function saveLive(){
+  const out = {}, now = Date.now();
+  for(const ll in live) if(now - live[ll].at < LIVE_TTL && liveText[ll]) out[ll] = [live[ll], liveText[ll]];
+  store.set('sp_live', JSON.stringify(out));
+}
+(function loadLive(){ const m = jget('sp_live', {}), now = Date.now(); for(const ll in m){ if(now - m[ll][0].at < LIVE_TTL){ live[ll] = m[ll][0]; liveText[ll] = m[ll][1]; } } })();
 function queueLive(ll, force){
   if(!ll || !liveEnabled() || livePending.has(ll)) return;
-  const c = live[ll];
+  const c = live[ll], s = stByLl.get(ll), bname = s ? brands[s[1]][0] : '';
   if(!force && c && Date.now() - c.at < LIVE_TTL) return;
-  if(!force && liveUsed >= LIVE_MAX) return;
+  if(!force && bname && noLive(bname)){ liveText[ll] = `<span class="meta">${esc(bname)} canlı doluluk paylaşmıyor.</span><button class="linkbtn" type="button" data-refresh="${ll}">Yine de sor</button>`; paintLive(ll); return; }
+  if(quotaLeft() <= 0){ liveText[ll] = `<span class="meta">Bugünkü ${DAILY_MAX} canlı sorgu hakkı doldu; yarın yenilenir.</span>`; paintLive(ll); return; }
   livePending.add(ll); liveQueue.push(ll); pumpLive();
 }
 function pumpLive(){
-  while(liveActive < 3 && liveQueue.length){
-    const ll = liveQueue.shift(); liveActive++; liveUsed++;
-    fetchLive(ll).finally(() => { liveActive--; livePending.delete(ll); pumpLive(); });
+  while(liveActive < 2 && liveQueue.length){
+    const ll = liveQueue.shift(); liveActive++; useQuota();
+    fetchLive(ll).finally(() => { liveActive--; livePending.delete(ll); saveLive(); pumpLive(); });
   }
 }
+// Only the nearest few cards are asked automatically; the rest have a one-tap link
 function observeLive(){
-  if(liveObs){ liveObs.disconnect(); liveObs = null; }
   if(!liveEnabled()) return;
-  const cards = [...document.querySelectorAll('#list article.card')];
-  if(!('IntersectionObserver' in window)){ cards.slice(0, 5).forEach(el => queueLive(el.dataset.ll)); return; }
-  liveObs = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting){ queueLive(e.target.dataset.ll); liveObs.unobserve(e.target); } }), {rootMargin: '150px 0px'});
-  cards.forEach(el => liveObs.observe(el));
+  [...document.querySelectorAll('#list article.card')].slice(0, AUTO_N).forEach(el => queueLive(el.dataset.ll));
 }
 function paintLive(ll){
   const s = stByLl.get(ll); if(!s) return;
@@ -478,6 +489,7 @@ async function fetchLive(ll){
     }
     const ts = p.evChargeOptions.connectorAggregation.map(a => a.availabilityLastUpdateTime).filter(Boolean).sort().pop();
     live[ll] = Object.assign({at: Date.now()}, acc);
+    if(bname) setNoLive(bname, !(acc.ac || acc.dc || acc.hpc));
     liveText[ll] = (acc.ac || acc.dc || acc.hpc)
       ? `<span class="meta">Canlı · Google${ts ? ' · ' + hhmm(ts) : ''}</span>${refresh}`
       : `<span class="meta">Bu operatör canlı doluluk paylaşmıyor.</span>`;
@@ -485,11 +497,11 @@ async function fetchLive(ll){
     live[ll] = {at: Date.now()};
     const m = e.message || '';
     liveText[ll] = '<span class="meta">' + (/referer|referrer/i.test(m) ? 'Google anahtarı bu adrese izin vermiyor (anahtar kısıtlamasına sitenin adresini ekleyin).'
-      : /quota|exhausted|rate/i.test(m) ? 'Günlük Google sorgu sınırı doldu.'
+      : /quota|exhausted|rate/i.test(m) ? 'Google günlük sınırı doldu. Google sayacı Türkiye saatiyle sabah 10–11 civarı sıfırlanır.'
       : /Failed to fetch|NetworkError|Load failed/i.test(m) ? 'Google\'a ulaşılamadı.' : 'Google hatası: ' + esc(m)) + '</span>' + refresh;
   }finally{ paintLive(ll); }
 }
-document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && here){ liveUsed = 0; const sc = window.scrollY; render(); window.scrollTo(0, sc); } });
+document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && here) observeLive(); });
 
 function parseCoord(t){
   const m = /(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/.exec(t);
