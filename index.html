@@ -119,6 +119,7 @@ details.settings p{color:var(--muted);font-size:13px;margin:8px 0;max-width:62ch
 }
 @media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}.card:hover{border-color:var(--muted)}}
 /* App-like mobile layer */
+[hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{margin:0;-webkit-tap-highlight-color:transparent}
 .filters{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:16px;padding-bottom:2px}
@@ -127,6 +128,43 @@ body{margin:0;-webkit-tap-highlight-color:transparent}
 #brand{flex:0 0 auto;width:auto;max-width:230px}
 .ring .num .of{fill:var(--muted);font-weight:600}
 .live .meta{color:var(--muted)}
+.search input{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 12px;font-size:15px;-webkit-appearance:none;appearance:none}
+.search input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.sametag{grid-column:1 / -1;font-size:12.5px;font-weight:600;color:var(--accent);letter-spacing:.02em;margin:-2px 0 6px}
+.card.same{border-left:3px solid var(--accent)}
+.card.site{border-left:3px solid var(--accent)}
+.views{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--line);padding:4px;border-radius:12px}
+.views button{border:0;background:transparent;border-radius:9px;padding:9px 8px;font-weight:600;font-size:15px;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:42px}
+.views button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.favhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:2px 0 8px}
+.favhead .meta{font-size:13px;color:var(--muted)}
+.favwrap{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+table.fav{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;table-layout:fixed}
+.fav th{font-size:12px;font-weight:600;color:var(--muted);text-align:center;padding:9px 2px;background:var(--bg);border-bottom:1px solid var(--line);line-height:1.15}
+.fav th small{display:block;font-weight:500;font-size:10.5px}
+.fav th:first-child{text-align:left;padding-left:12px}
+.fav col.c-kw{width:38px}.fav col.c-n{width:44px}.fav col.c-p{width:94px}
+.fav td{padding:10px 2px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}
+.fav tr:last-child td{border-bottom:0}
+.fav td.st{text-align:left;padding-left:10px}
+.st .r{display:flex;gap:8px;align-items:center;min-width:0}
+.logo{flex:0 0 30px;height:30px;border-radius:9px;overflow:hidden;display:grid;place-items:center;font:700 14px/1 var(--display);color:#fff;letter-spacing:.02em}
+.st .t{min-width:0}
+.st a{font-weight:600;color:var(--ink);text-decoration:none;font-size:14px;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.st small{display:block;color:var(--muted);font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kwv{font:600 16px/1 var(--display)}
+.cnt{font:700 18px/1 var(--display);white-space:nowrap}
+.cnt i{font-style:normal;font-weight:600;font-size:13px;color:var(--muted)}
+.cnt.ok{color:var(--good)}.cnt.no{color:var(--bad)}.cnt.unk{color:var(--muted)}.cnt.none{color:var(--ghost);font-weight:600}
+.pr{font-size:11.5px;line-height:1.4;color:var(--ink);text-align:right;padding-right:8px!important;letter-spacing:-.01em}
+.pr span{display:block;white-space:nowrap}
+.pr em{font-style:normal;color:var(--muted);font-size:9.5px;margin-right:3px;font-weight:600}
+.favempty{padding:22px 16px;text-align:center;color:var(--muted);font-size:15px}
+.favbtn{position:absolute;top:6px;right:6px;width:44px;height:44px;border:0;background:transparent;color:var(--ghost);cursor:pointer;display:grid;place-items:center;border-radius:12px}
+.favbtn[aria-pressed="true"]{color:#f5a524}
+.favbtn svg{width:24px;height:24px}
+.card{position:relative}
+.card .info{padding-right:30px}
 .linkbtn{border:0;background:none;padding:6px 4px;margin-left:4px;color:var(--accent);font-weight:600;font-size:inherit;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 @media (max-width:560px){
   body{font-size:17px}
@@ -139,6 +177,8 @@ body{margin:0;-webkit-tap-highlight-color:transparent}
   .loc .btn{justify-content:center;padding:8px 6px;font-size:15.5px;min-height:46px;border-radius:12px}
   .panel .btn{min-height:44px}
   .chip{min-height:42px;font-size:15.5px}
+  .search input{font-size:16px;padding:12px 14px;border-radius:12px}
+  .sametag{font-size:13.5px}
   #minkw,#brand{min-height:42px;font-size:15.5px;border-radius:999px;padding-inline:12px}
   main .wrap{padding-block:12px calc(32px + env(safe-area-inset-bottom,0px))}
   .legend{font-size:13px;gap:4px 12px}
@@ -184,6 +224,7 @@ body{margin:0;-webkit-tap-highlight-color:transparent}
       </div>
       <div class="msg" id="msg" hidden></div>
     </div>
+    <div class="search"><input type="search" id="q" placeholder="Ara: istasyon, operatör, adres (ör. Tesla)" aria-label="İstasyon, operatör veya adres ara" autocomplete="off" enterkeyhint="search"></div>
     <div class="filters" role="group" aria-label="Filtreler">
       <button class="chip" type="button" data-f="all" aria-pressed="true">Tümü</button>
       <button class="chip" type="button" data-f="ac" aria-pressed="false">AC</button>
@@ -203,6 +244,11 @@ body{margin:0;-webkit-tap-highlight-color:transparent}
 
 <main>
   <div class="wrap">
+    <div class="views" role="tablist" aria-label="Görünüm">
+      <button type="button" role="tab" id="tabFav" data-view="fav" aria-selected="false"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" fill="currentColor"/></svg>Favorilerim</button>
+      <button type="button" role="tab" id="tabNear" data-view="near" aria-selected="true">Yakındakiler</button>
+    </div>
+    <section id="favView" hidden></section>
     <div class="summary" id="summary"></div>
     <div class="legend" aria-label="Halka renkleri"><span><i style="background:var(--good)"></i>Boş soket</span><span><i style="background:var(--bad)"></i>Dolu veya arızalı</span><span><i style="background:var(--unk)"></i>Durum bilinmiyor</span><span><i style="background:transparent;border:1.5px dashed var(--ghost)"></i>Bu sınıfta soket yok</span></div>
     <div id="list"></div>
@@ -210,7 +256,7 @@ body{margin:0;-webkit-tap-highlight-color:transparent}
     <details class="settings">
       <summary>Canlı soket durumu (isteğe bağlı)</summary>
       <p>EPDK verisi anlık doluluğu içermez. Ücretsiz yollar: kartlardaki <b>ABRP'de aç</b> (istasyon adı kopyalanır, ABRP'de aramaya yapıştırın), <b>Maps'te gör</b> ya da operatörün uygulaması.</p>
-      <p><b>Google canlı sorgusu:</b> Anahtar kayıtlı ve aşağıdaki seçenek açıkken ekrana gelen istasyonların doluluğu kendiliğinden sorgulanır. Otomatik olarak yalnızca en yakın 3 istasyon sorulur, diğerleri için karttaki bağlantıya dokunun. Aynı istasyon 5 dakika içinde tekrar sorulmaz ve günde en çok 30 sorgu yapılır; böylece Google'ın aylık 1.000 ücretsiz sorgusu aşılmaz. Canlı veri paylaşmadığı görülen operatörler 7 gün boyunca otomatik sorulmaz. Canlı veriyi yalnızca Google'a veri gönderen operatörler verir; diğerlerinde halka gri kalır. Kapalıyken hiç sorgu yapılmaz, ücret oluşmaz.</p>
+      <p><b>Google canlı sorgusu:</b> Anahtar kayıtlı ve aşağıdaki seçenek açıkken ekrana gelen istasyonların doluluğu kendiliğinden sorgulanır. Otomatik olarak yalnızca en yakın 3 nokta sorulur (aynı noktadaki tüm operatörler tek sorguyla); diğerleri için karttaki bağlantıya dokunun. Canlı verisi olan noktalar 1 km'ye kadar daha uzaktaki istasyonların önüne geçer. 5 km'den uzak sonuçlar (örneğin aramalarda) kendiliğinden sorulmaz. Aynı istasyon 5 dakika içinde tekrar sorulmaz ve günde en çok 30 sorgu yapılır; böylece Google'ın aylık 1.000 ücretsiz sorgusu aşılmaz. Canlı veri paylaşmadığı görülen operatörler 7 gün boyunca otomatik sorulmaz. Canlı veriyi yalnızca Google'a veri gönderen operatörler verir; diğerlerinde halka gri kalır. Kapalıyken hiç sorgu yapılmaz, ücret oluşmaz.</p>
       <label class="toggle"><input type="checkbox" id="gon"> Canlı doluluğu otomatik sorgula</label>
       <div class="row">
         <input type="password" id="gkey" placeholder="Google Places API anahtarı" aria-label="Google Places API anahtarı" autocomplete="off">
@@ -282,24 +328,31 @@ function priceText(b, kind){
 }
 
 function filtered(){
-  const minkw = +$('minkw').value, br = $('brand').value;
+  const minkw = +$('minkw').value, br = $('brand').value, qt = qText().split(/\s+/).map(fold).filter(Boolean);
   return st.filter(s => {
     if(mode === 'ac' && !s[5]) return false;
     if(mode === 'dc' && !s[7]) return false;
     if(mode === 'hpc' && !s[9]) return false;
     if(minkw && Math.max(s[6], s[8], s[10]) < minkw) return false;
     if(br !== '' && s[1] !== +br) return false;
+    if(qt.length){ const h = hayOf(s); if(!qt.every(t => h.includes(t))) return false; }
     return true;
   });
 }
+const hayCache = new WeakMap();
+function hayOf(s){ let h = hayCache.get(s); if(h == null){ h = fold(s[0] + ' ' + ((brands[s[1]] || [''])[0]) + ' ' + s[2]); hayCache.set(s, h); } return h; }
+const qText = () => ($('q').value || '').trim();
+const rkeyNow = () => here.join(',') + '|' + mode + '|' + $('minkw').value + '|' + $('brand').value + '|' + qText().toLocaleLowerCase('tr-TR');
 
 function render(){
+  setView(view);
+  if(view === 'fav'){ renderFav(); return; }
   const list = $('list');
   if(!here){ list.innerHTML = '<div class="empty">Yakındaki istasyonları görmek için bir konum seçin.</div>'; $('more').hidden = true; $('summary').textContent=''; return; }
   let rows = filtered().map(s => [hav(here[0], here[1], s[3], s[4]), s]).sort((a,b)=>a[0]-b[0]);
-  if(!rows.length){ $('summary').textContent = ''; list.innerHTML = '<div class="empty">Bu filtrelerle istasyon yok. Filtreleri gevşetin.</div>'; $('more').hidden = true; return; }
+  if(!rows.length){ $('summary').textContent = ''; list.innerHTML = qText() ? `<div class="empty">“${esc(qText())}” için istasyon bulunamadı.</div>` : '<div class="empty">Bu filtrelerle istasyon yok. Filtreleri gevşetin.</div>'; $('more').hidden = true; return; }
   // Road distance for the nearest candidates (free OSRM routing on OpenStreetMap); everything else stays straight-line
-  const cand = rows.slice(0, ROAD_N), rkey = here.join(',') + '|' + mode + '|' + $('minkw').value + '|' + $('brand').value;
+  const cand = rows.slice(0, ROAD_N), rkey = rkeyNow();
   const road = roadCache.get(rkey);
   let note;
   if(road && road.ok){
@@ -313,10 +366,11 @@ function render(){
     note = `${rows.length.toLocaleString('tr-TR')} istasyon. Yol mesafeleri hesaplanıyor…`;
     fetchRoad(rkey, cand.map(r => r[1]));
   }
-  $('summary').textContent = note;
+  $('summary').textContent = (qText() ? `“${qText()}” araması · ` : '') + note;
   const key = store.get('sp_gkey'), gon = store.get('sp_gon') !== '0';
-  rows.slice(0, shown).forEach(([, s]) => stByLl.set(s[3] + ',' + s[4], s));
-  list.innerHTML = rows.slice(0, shown).map(([d, s], i) => card(d, s, i, !!key && gon, road && road.ok ? road.m.get(s) : null)).join('');
+  rows.slice(0, shown).forEach(([, s]) => stByLl.set(sid(s), s));
+  const page = arrange(rows.slice(0, shown));
+  list.innerHTML = page.map(([d, s, g], i) => card(d, s, i, !!key && gon, road && road.ok ? road.m.get(s) : null, g)).join('');
   observeLive();
   list.style.display = 'grid'; list.style.gap = '12px';
   $('more').hidden = rows.length <= shown;
@@ -337,7 +391,7 @@ async function fetchRoad(rkey, stations){
   }catch(e){
     roadCache.set(rkey, {ok: false});
   }
-  const cur = here && (here.join(',') + '|' + mode + '|' + $('minkw').value + '|' + $('brand').value);
+  const cur = here && rkeyNow();
   if(cur === rkey){ const sc = window.scrollY; render(); window.scrollTo(0, sc); }
 }
 // One ring per class: n segments, green = free, red = busy/broken, grey = unknown, dashed ghost when the class has no sockets
@@ -372,7 +426,7 @@ function ring(cls, n, kw, lv){
 }
 function fmtKm(d){ return d < 1 ? Math.round(d*1000) + ' m' : d.toLocaleString('tr-TR',{maximumFractionDigits: d < 10 ? 1 : 0}) + ' km'; }
 
-function card(d0, s, i, hasKey, rd){
+function card(d0, s, i, hasKey, rd, g){
   const d = rd ? rd[0] / 1000 : d0;
   const b = brands[s[1]], [name, , , note, ios, android] = b;
   const big = d < 1 ? Math.round(d*1000) : d.toLocaleString('tr-TR',{maximumFractionDigits: d < 10 ? 1 : 0});
@@ -389,7 +443,11 @@ function card(d0, s, i, hasKey, rd){
   const seeLl = 'https://www.google.com/maps/search/?api=1&query=' + ll;
   const abrp = 'https://abetterrouteplanner.com/?lat=' + s[3] + '&lon=' + s[4] + '&destinations=' + encodeURIComponent(JSON.stringify([{address: s[0] + ', ' + name, lat: s[3], lon: s[4]}]));
   const app = /iPhone|iPad|iPod/.test(navigator.userAgent) ? (ios || android) : (android || ios);
-  return `<article class="card" data-ll="${ll}">
+  const id = sid(s);
+  const tag = g && g.size > 1 ? `<div class="sametag">${g.pos ? (g.m < 60 ? 'Aynı noktada' : 'Hemen yakınında') + ' · ' + g.m + ' m' : 'Bu çevrede ' + g.size + ' istasyon'}</div>` : '';
+  const isFav = favs.includes(favKey(s));
+  return `<article class="card${g && g.size > 1 ? (g.pos ? ' same' : ' site') : ''}" data-ll="${id}" data-d="${d.toFixed(2)}">${tag}
+    <button class="favbtn" type="button" data-fav="${esc(favKey(s))}" aria-pressed="${isFav}" aria-label="${isFav ? 'Favorilerden çıkar' : 'Favorilere ekle'}">${STAR}</button>
     <div class="dist">${big}<small>${unit}</small><span class="how">${rd ? 'yol · ' + fmtMin(rd[1]) : 'kuş uçuşu'}</span></div>
     <div class="info">
       <h2 class="name">${esc(s[0])}</h2>
@@ -404,104 +462,235 @@ function card(d0, s, i, hasKey, rd){
       <a class="btn" href="${abrp}" target="_blank" rel="noopener" data-abrp="${esc(s[0] + ' ' + name)}">ABRP'de aç</a>
       ${app ? `<a class="btn" href="${app}" target="_blank" rel="noopener">${esc(name)} uygulaması</a>` : ''}
     </div>
-    <div class="live">${liveText[ll] || (liveEnabled() ? `<button class="linkbtn" type="button" data-refresh="${ll}">Canlı durumu göster</button>` : '')}</div>
+    <div class="live">${liveText[id] || (liveEnabled() ? `<button class="linkbtn" type="button" data-refresh="${id}">Canlı durumu göster</button>` : '')}</div>
   </article>`;
 }
 
 const TYPE = {EV_CONNECTOR_TYPE_CCS_COMBO_2:'CCS', EV_CONNECTOR_TYPE_TYPE_2:'Type 2', EV_CONNECTOR_TYPE_CHADEMO:'CHAdeMO', EV_CONNECTOR_TYPE_TESLA:'Tesla', EV_CONNECTOR_TYPE_CCS_COMBO_1:'CCS1'};
-// --- Live availability: queried automatically when a card comes into view, cached for 3 minutes
-const stByLl = new Map();
-function ringsFor(s){ const lv = live[s[3] + ',' + s[4]]; return ring('AC', s[5], s[6], lv && lv.ac) + ring('DC', s[7], s[8], lv && lv.dc) + ring('HPC', s[9], s[10], lv && lv.hpc); }
+// --- Live availability (Google Places). One lookup covers every operator at the same site.
+const stByLl = new Map(), siteOf = new Map(), SITE_M = 200;
+const sid = s => s[3] + ',' + s[4] + '|' + s[1];
+function ringsFor(s){ const lv = live[sid(s)]; return ring('AC', s[5], s[6], lv && lv.ac) + ring('DC', s[7], s[8], lv && lv.dc) + ring('HPC', s[9], s[10], lv && lv.hpc); }
 const fold = t => String(t || '').toLocaleLowerCase('tr-TR').replace(/[çğıöşüâî]/g, c => ({'ç':'c','ğ':'g','ı':'i','ö':'o','ş':'s','ü':'u','â':'a','î':'i'}[c])).replace(/[^a-z0-9]/g, '');
+// Whole-word match on the operator name, so "WAT" never matches "otoWATT"
 function brandMatch(brandName, placeName){
-  const p = fold(placeName), first = fold(String(brandName || '').trim().split(/\s+/)[0]), all = fold(brandName);
-  return (first.length >= 3 && p.includes(first)) || (all.length >= 3 && p.includes(all));
+  const words = String(placeName || '').toLocaleLowerCase('tr-TR').split(/[^0-9a-zçğıöşüâî]+/).map(fold).filter(Boolean);
+  const bt = String(brandName || '').trim().split(/\s+/).map(fold).filter(Boolean), first = bt[0] || '', all = bt.join('');
+  if(!first) return false;
+  if(words.includes(first)) return true;
+  if(first.length >= 5 && words.some(w => w.startsWith(first))) return true;
+  return all.length >= 5 && fold(placeName).includes(all);
 }
+// Stations within SITE_M of each other are shown together; sites with live data move up within the page
+function arrange(page){
+  const groups = [];
+  for(const r of page){
+    const s = r[1], g = groups.find(g => g.some(([, t]) => hav(t[3], t[4], s[3], s[4]) * 1000 < SITE_M));
+    if(g) g.push(r); else groups.push([r]);
+  }
+  // A site with live socket data counts as LIVE_BONUS km closer, so it moves up but never jumps far-away ones ahead
+  const eff = g => g[0][0] - (g.some(([, s]) => liveKnown(s)) ? LIVE_BONUS : 0);
+  const ordered = groups.map((g, i) => [eff(g), i, g]).sort((x, y) => x[0] - y[0] || x[1] - y[1]).map(x => x[2]);
+  siteOf.clear();
+  const out = [];
+  for(const g of ordered){
+    const ids = g.map(([, s]) => sid(s)), a0 = g[0][1];
+    g.forEach(([d, s], j) => { siteOf.set(sid(s), ids); out.push([d, s, {pos: j, size: g.length, m: j ? Math.round(hav(a0[3], a0[4], s[3], s[4]) * 1000) : 0}]); });
+  }
+  return out;
+}
+const LIVE_BONUS = 1, AUTO_KM = 5;
+function liveKnown(s){ const lv = live[sid(s)]; return !!(lv && (lv.ac || lv.dc || lv.hpc)); }
 // Free tier: Google gives 1,000 of these lookups a month, so the page stays under 30 a day
-const LIVE_TTL = 5 * 60 * 1000, AUTO_N = 3, DAILY_MAX = 30, NOLIVE_DAYS = 7, livePending = new Set(), liveQueue = [];
+const LIVE_TTL = 5 * 60 * 1000, ERR_TTL = 60 * 1000, AUTO_N = 3, DAILY_MAX = 30, NOLIVE_DAYS = 7, livePending = new Set(), liveQueue = [];
 let liveActive = 0;
 const liveEnabled = () => !!store.get('sp_gkey') && store.get('sp_gon') !== '0';
 const jget = (k, d) => { try{ return JSON.parse(store.get(k)) || d; }catch(e){ return d; } };
 const today = () => new Date().toLocaleDateString('sv-SE');
 function quotaLeft(){ const q = jget('sp_lday', {}); return q.d === today() ? DAILY_MAX - q.n : DAILY_MAX; }
 function useQuota(){ const q = jget('sp_lday', {}), d = today(); store.set('sp_lday', JSON.stringify({d, n: (q.d === d ? q.n : 0) + 1})); }
-function noLive(brand){ const t = jget('sp_nolive', {})[brand]; return t && Date.now() - t < NOLIVE_DAYS * 864e5; }
-function setNoLive(brand, on){ const m = jget('sp_nolive', {}); if(on) m[brand] = Date.now(); else delete m[brand]; store.set('sp_nolive', JSON.stringify(m)); }
+function noLive(brand){ const t = jget('sp_nolive', {})[brand]; return !!t && Date.now() - t < NOLIVE_DAYS * 864e5; }
+function hasLiveBrand(brand){ const t = jget('sp_haslive', {})[brand]; return !!t && Date.now() - t < 30 * 864e5; }
+function markBrand(brand, has){
+  const n = jget('sp_nolive', {}), h = jget('sp_haslive', {});
+  if(has){ h[brand] = Date.now(); delete n[brand]; } else if(!h[brand]) n[brand] = Date.now();
+  store.set('sp_nolive', JSON.stringify(n)); store.set('sp_haslive', JSON.stringify(h));
+}
 function saveLive(){
   const out = {}, now = Date.now();
-  for(const ll in live) if(now - live[ll].at < LIVE_TTL && liveText[ll]) out[ll] = [live[ll], liveText[ll]];
+  for(const k in live) if(!live[k].err && now - live[k].at < LIVE_TTL && liveText[k]) out[k] = [live[k], liveText[k]];
   store.set('sp_live', JSON.stringify(out));
 }
-(function loadLive(){ const m = jget('sp_live', {}), now = Date.now(); for(const ll in m){ if(now - m[ll][0].at < LIVE_TTL){ live[ll] = m[ll][0]; liveText[ll] = m[ll][1]; } } })();
-function queueLive(ll, force){
-  if(!ll || !liveEnabled() || livePending.has(ll)) return;
-  const c = live[ll], s = stByLl.get(ll), bname = s ? brands[s[1]][0] : '';
-  if(!force && c && Date.now() - c.at < LIVE_TTL) return;
-  if(!force && bname && noLive(bname)){ liveText[ll] = `<span class="meta">${esc(bname)} canlı doluluk paylaşmıyor.</span><button class="linkbtn" type="button" data-refresh="${ll}">Yine de sor</button>`; paintLive(ll); return; }
-  if(quotaLeft() <= 0){ liveText[ll] = `<span class="meta">Bugünkü ${DAILY_MAX} canlı sorgu hakkı doldu; yarın yenilenir.</span>`; paintLive(ll); return; }
-  livePending.add(ll); liveQueue.push(ll); pumpLive();
+(function loadLive(){ const m = jget('sp_live', {}), now = Date.now(); for(const k in m){ if(k.includes('|') && now - m[k][0].at < LIVE_TTL){ live[k] = m[k][0]; liveText[k] = m[k][1]; } } })();
+const refreshBtn = (id, t) => `<button class="linkbtn" type="button" data-refresh="${id}">${t || 'Yenile'}</button>`;
+function queueLive(id, force){
+  if(!id || !liveEnabled() || livePending.has(id)) return;
+  const s = stByLl.get(id); if(!s) return;
+  const c = live[id];
+  if(!force && c && Date.now() - c.at < (c.err ? ERR_TTL : LIVE_TTL)) return;
+  const site = (siteOf.get(id) || [id]).filter(x => stByLl.has(x));
+  if(!force && site.every(x => noLive(brands[stByLl.get(x)[1]][0]))){
+    site.forEach(x => { liveText[x] = `<span class="meta">${esc(brands[stByLl.get(x)[1]][0])} canlı doluluk paylaşmıyor.</span>` + refreshBtn(x, 'Yine de sor'); paintLive(x); });
+    return;
+  }
+  if(quotaLeft() <= 0){ site.forEach(x => { liveText[x] = `<span class="meta">Bugünkü ${DAILY_MAX} canlı sorgu hakkı doldu; yarın yenilenir.</span>`; paintLive(x); }); return; }
+  site.forEach(x => livePending.add(x)); liveQueue.push([id, site]); pumpLive();
 }
 function pumpLive(){
   while(liveActive < 2 && liveQueue.length){
-    const ll = liveQueue.shift(); liveActive++; useQuota();
-    fetchLive(ll).finally(() => { liveActive--; livePending.delete(ll); saveLive(); pumpLive(); });
+    const [id, site] = liveQueue.shift(); liveActive++; useQuota();
+    fetchLive(id, site).finally(() => { liveActive--; site.forEach(x => livePending.delete(x)); saveLive(); pumpLive(); });
   }
 }
-// Only the nearest few cards are asked automatically; the rest have a one-tap link
+// Only the nearest few sites are asked automatically; the rest have a one-tap link
 function observeLive(){
-  if(!liveEnabled()) return;
-  [...document.querySelectorAll('#list article.card')].slice(0, AUTO_N).forEach(el => queueLive(el.dataset.ll));
+  if(!liveEnabled() || /örnek konum/.test(hereLabel)) return;
+  const seen = new Set();
+  for(const el of document.querySelectorAll('#list article.card')){
+    if(+el.dataset.d > AUTO_KM) continue;
+    const id = el.dataset.ll, key = (siteOf.get(id) || [id])[0];
+    if(seen.has(key)) continue;
+    seen.add(key); queueLive(id);
+    if(seen.size >= AUTO_N) break;
+  }
 }
-function paintLive(ll){
-  const s = stByLl.get(ll); if(!s) return;
+function paintLive(id){
+  const s = stByLl.get(id); if(!s) return;
+  document.querySelectorAll('#favView tr[data-ll]').forEach(tr => { if(tr.dataset.ll === id) tr.innerHTML = favCells(s); });
   document.querySelectorAll('#list article.card').forEach(el => {
-    if(el.dataset.ll !== ll) return;
+    if(el.dataset.ll !== id) return;
     el.querySelector('.rings').innerHTML = ringsFor(s);
-    el.querySelector('.live').innerHTML = liveText[ll] || '';
+    el.querySelector('.live').innerHTML = liveText[id] || '';
   });
 }
 const hhmm = iso => new Date(iso).toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'});
-async function fetchLive(ll){
-  const s = stByLl.get(ll), [lat, lng] = ll.split(',').map(Number), key = store.get('sp_gkey');
-  const bname = s ? brands[s[1]][0] : '';
-  const refresh = `<button class="linkbtn" type="button" data-refresh="${ll}">Yenile</button>`;
-  if(!live[ll]){ liveText[ll] = '<span class="meta">Canlı durum alınıyor…</span>'; paintLive(ll); }
+async function fetchLive(id, site){
+  const s0 = stByLl.get(id), members = site.map(x => [x, stByLl.get(x)]).filter(m => m[1]);
+  members.forEach(([x]) => { if(!live[x] || live[x].err){ liveText[x] = '<span class="meta">Canlı durum alınıyor…</span>'; paintLive(x); } });
   try{
-    const r = await fetch('https://places.googleapis.com/v1/places:searchNearby', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Goog-Api-Key': key, 'X-Goog-FieldMask': 'places.displayName,places.evChargeOptions'},
-      body: JSON.stringify({includedTypes: ['electric_vehicle_charging_station'], maxResultCount: 10, rankPreference: 'DISTANCE', locationRestriction: {circle: {center: {latitude: lat, longitude: lng}, radius: 200}}})});
+    const r = await fetch('https://places.googleapis.com/v1/places:searchNearby', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Goog-Api-Key': store.get('sp_gkey'), 'X-Goog-FieldMask': 'places.displayName,places.location,places.evChargeOptions'},
+      body: JSON.stringify({includedTypes: ['electric_vehicle_charging_station'], maxResultCount: 10, rankPreference: 'DISTANCE', locationRestriction: {circle: {center: {latitude: s0[3], longitude: s0[4]}, radius: 250}}})});
     const j = await r.json();
-    if(!r.ok) throw new Error(j.error && j.error.message || ('HTTP ' + r.status));
+    if(!r.ok){ const err = new Error(j.error && j.error.message || ('HTTP ' + r.status)); err.status = r.status; throw err; }
     const places = (j.places || []).filter(x => x.evChargeOptions && x.evChargeOptions.connectorAggregation && x.evChargeOptions.connectorAggregation.length);
-    const mine = places.filter(x => brandMatch(bname, x.displayName && x.displayName.text));
-    const p = mine[0] || (places.length === 1 ? places[0] : null);
-    if(!p){
-      live[ll] = {at: Date.now()};
-      liveText[ll] = `<span class="meta">${places.length ? 'Google\'da bu operatöre ait kayıt eşleşmedi.' : 'Google bu istasyon için soket bilgisi vermiyor.'}</span>`;
-      return;
+    const far = (p, s) => p.location ? hav(p.location.latitude, p.location.longitude, s[3], s[4]) : 1;
+    for(const [x, s] of members){
+      const bname = brands[s[1]][0];
+      let p = places.filter(q => brandMatch(bname, q.displayName && q.displayName.text)).sort((a, b) => far(a, s) - far(b, s))[0];
+      if(!p && members.length === 1 && places.length === 1) p = places[0];
+      if(!p){ live[x] = {at: Date.now()}; liveText[x] = `<span class="meta">${places.length ? 'Google\'da bu operatöre ait kayıt eşleşmedi.' : 'Google bu noktada soket bilgisi vermiyor.'}</span>`; continue; }
+      const acc = {ac: null, dc: null, hpc: null};
+      for(const a of p.evChargeOptions.connectorAggregation){
+        if(a.availableCount == null) continue;
+        let k = a.type === 'EV_CONNECTOR_TYPE_TYPE_2' || a.type === 'EV_CONNECTOR_TYPE_J1772' ? 'ac' : ((a.maxChargeRateKw || 0) >= 150 ? 'hpc' : 'dc');
+        if(k === 'hpc' && !s[9] && s[7]) k = 'dc'; else if(k === 'dc' && !s[7] && s[9]) k = 'hpc';
+        const o = acc[k] || (acc[k] = {avail: 0, count: 0, oos: 0});
+        o.avail += a.availableCount; o.count += a.count || 0; o.oos += a.outOfServiceCount || 0;
+      }
+      const has = !!(acc.ac || acc.dc || acc.hpc), ts = p.evChargeOptions.connectorAggregation.map(a => a.availabilityLastUpdateTime).filter(Boolean).sort().pop();
+      live[x] = Object.assign({at: Date.now()}, acc);
+      markBrand(bname, has);
+      liveText[x] = has ? `<span class="meta">Canlı · Google${ts ? ' · ' + hhmm(ts) : ''}</span>` + refreshBtn(x) : `<span class="meta">${esc(bname)} canlı doluluk paylaşmıyor.</span>`;
     }
-    const acc = {ac: null, dc: null, hpc: null};
-    for(const a of p.evChargeOptions.connectorAggregation){
-      if(a.availableCount == null) continue;
-      let k = a.type === 'EV_CONNECTOR_TYPE_TYPE_2' || a.type === 'EV_CONNECTOR_TYPE_J1772' ? 'ac' : ((a.maxChargeRateKw || 0) >= 150 ? 'hpc' : 'dc');
-      if(s){ if(k === 'hpc' && !s[9] && s[7]) k = 'dc'; else if(k === 'dc' && !s[7] && s[9]) k = 'hpc'; }
-      const o = acc[k] || (acc[k] = {avail: 0, count: 0, oos: 0});
-      o.avail += a.availableCount; o.count += a.count || 0; o.oos += a.outOfServiceCount || 0;
-    }
-    const ts = p.evChargeOptions.connectorAggregation.map(a => a.availabilityLastUpdateTime).filter(Boolean).sort().pop();
-    live[ll] = Object.assign({at: Date.now()}, acc);
-    if(bname) setNoLive(bname, !(acc.ac || acc.dc || acc.hpc));
-    liveText[ll] = (acc.ac || acc.dc || acc.hpc)
-      ? `<span class="meta">Canlı · Google${ts ? ' · ' + hhmm(ts) : ''}</span>${refresh}`
-      : `<span class="meta">Bu operatör canlı doluluk paylaşmıyor.</span>`;
   }catch(e){
-    live[ll] = {at: Date.now()};
     const m = e.message || '';
-    liveText[ll] = '<span class="meta">' + (/referer|referrer/i.test(m) ? 'Google anahtarı bu adrese izin vermiyor (anahtar kısıtlamasına sitenin adresini ekleyin).'
-      : /quota|exhausted|rate/i.test(m) ? 'Google günlük sınırı doldu. Google sayacı Türkiye saatiyle sabah 10–11 civarı sıfırlanır.'
-      : /Failed to fetch|NetworkError|Load failed/i.test(m) ? 'Google\'a ulaşılamadı.' : 'Google hatası: ' + esc(m)) + '</span>' + refresh;
-  }finally{ paintLive(ll); }
+    const msg = /referer|referrer/i.test(m) ? 'Google anahtarı bu adrese izin vermiyor (anahtar kısıtlamasına sitenin adresini ekleyin).'
+      : e.status === 429 ? 'Google günlük sınırı doldu. Google sayacı Türkiye saatiyle sabah 10–11 civarı sıfırlanır.'
+      : /Failed to fetch|NetworkError|Load failed/i.test(m) ? 'Google\'a ulaşılamadı.' : 'Google hatası: ' + esc(m);
+    members.forEach(([x]) => { live[x] = {at: Date.now(), err: true}; liveText[x] = `<span class="meta">${msg}</span>` + refreshBtn(x); });
+  }finally{ members.forEach(([x]) => paintLive(x)); }
 }
 document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && here) observeLive(); });
+
+// --- Readable name for a GPS position: OpenStreetMap first, nearest district as fallback
+async function placeName(lat, lng){
+  try{
+    const ctl = new AbortController(); setTimeout(() => ctl.abort(), 6000);
+    const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=17&accept-language=tr`, {signal: ctl.signal});
+    const a = (await r.json()).address || {};
+    const parts = [a.neighbourhood || a.suburb || a.quarter || a.village, a.town || a.city_district || a.district || a.county, a.province || a.state || a.city]
+      .filter(Boolean).filter((x, i, arr) => arr.indexOf(x) === i);
+    if(parts.length) return parts.join(', ');
+  }catch(e){}
+  let best = null;
+  for(const il in districts) for(const d in districts[il]){ const c = districts[il][d], k = hav(lat, lng, c[0], c[1]); if(!best || k < best[0]) best = [k, title(d) + ', ' + title(il)]; }
+  return best ? best[1] + ' yakını' : null;
+}
+function setLabel(lat, lng, label){
+  if(!here || here[0] !== lat || here[1] !== lng || !label) return;
+  hereLabel = label; $('loclabel').innerHTML = 'Konum: <b>' + esc(label) + '</b>';
+  store.set('sp_loc', JSON.stringify({lat, lng, label, gps: true}));
+}
+
+// --- Favourites: a compact table of saved stations, shown first when the page opens
+const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" fill="currentColor"/></svg>';
+let favs = jget('sp_favs', []), view = 'near', favIndex = null, favIndexFor = null;
+const favKey = s => s[3].toFixed(5) + ',' + s[4].toFixed(5) + '|' + s[0];
+function favStations(){
+  if(favIndexFor !== st){ favIndex = new Map(st.map(s => [favKey(s), s])); favIndexFor = st; }
+  return favs.map(k => favIndex.get(k)).filter(Boolean);
+}
+function toggleFav(k){
+  favs = favs.includes(k) ? favs.filter(x => x !== k) : favs.concat(k);
+  store.set('sp_favs', JSON.stringify(favs));
+}
+function setView(v){
+  view = v;
+  $('favView').hidden = v !== 'fav';
+  for(const id of ['summary', 'list']) $(id).hidden = v === 'fav';
+  document.querySelector('.legend').hidden = v === 'fav';
+  document.querySelector('.search').hidden = v === 'fav'; document.querySelector('.filters').hidden = v === 'fav';
+  if(v === 'fav') $('more').hidden = true;
+  $('tabFav').setAttribute('aria-selected', v === 'fav'); $('tabNear').setAttribute('aria-selected', v === 'near');
+}
+// Initials badge per operator; colour is derived from the name so it stays the same everywhere
+function logo(name){
+  const w = String(name || '?').replace(/[^0-9A-Za-zÇĞİÖŞÜçğıöşü ]/g, ' ').trim().split(/\s+/);
+  const ini = (w.length > 1 && w[0].length <= 3 ? w[0] : w[0].slice(0, 2)).toLocaleUpperCase('tr-TR').slice(0, 3);
+  let h = 0; for(const c of fold(name)) h = (h * 31 + c.charCodeAt(0)) % 360;
+  return `<span class="logo" style="background:hsl(${h} 55% 40%)${ini.length > 2 ? ';font-size:10.5px' : ''}" aria-hidden="true">${esc(ini)}</span>`;
+}
+function countCell(parts, total){
+  if(!total) return '<span class="cnt none">–</span>';
+  const known = parts.filter(Boolean);
+  if(!known.length) return `<span class="cnt unk">?<i>/${total}</i></span>`;
+  const free = known.reduce((a, o) => a + o.avail, 0), all = known.reduce((a, o) => a + o.count, 0) || total;
+  return `<span class="cnt ${free ? 'ok' : 'no'}">${free}<i>/${all}</i></span>`;
+}
+function shortPrice(b, kind){ const t = brands[b] && brands[b][kind === 'dc' ? 2 : 1]; if(!t) return null; const f = n => n.toLocaleString('tr-TR', {minimumFractionDigits: 2, maximumFractionDigits: 2}); return t[0] === t[1] ? f(t[0]) : f(t[0]) + '–' + f(t[1]); }
+function favCells(s){
+  const lv = live[sid(s)] || {}, name = brands[s[1]][0], ll = s[3] + ',' + s[4];
+  const kw = Math.max(s[6], s[8], s[10]);
+  const d = here ? hav(here[0], here[1], s[3], s[4]) : null;
+  const pdc = (s[7] || s[9]) ? shortPrice(s[1], 'dc') : null, pac = s[5] ? shortPrice(s[1], 'ac') : null;
+  const price = (pdc ? `<span><em>DC</em>${pdc}</span>` : '') + (pac ? `<span><em>AC</em>${pac}</span>` : '') || '<span style="color:var(--muted)">–</span>';
+  return `<td class="st"><div class="r">${logo(name)}<div class="t"><a href="https://www.google.com/maps/dir/?api=1&destination=${ll}&travelmode=driving" target="_blank" rel="noopener">${esc(s[0])}</a><small>${esc(name)}${d != null ? ' · ' + fmtKm(d) : ''}</small></div></div></td>
+    <td><span class="kwv">${kw || '–'}</span></td>
+    <td>${countCell([lv.ac], s[5])}</td>
+    <td>${countCell([lv.dc, lv.hpc], s[7] + s[9])}</td>
+    <td class="pr">${price}</td>`;
+}
+function renderFav(){
+  const fs = favStations();
+  const box = $('favView');
+  if(!fs.length){
+    box.innerHTML = `<div class="favwrap"><div class="favempty">Henüz favori yok.<br>Yakındakiler listesinde bir kartın sağ üstündeki yıldıza dokunun; o istasyon burada tablo olarak görünür.</div></div>`;
+    return;
+  }
+  // favourites at the same site share one Google lookup
+  siteOf.clear();
+  const groups = [];
+  for(const s of fs){ stByLl.set(sid(s), s); const g = groups.find(g => g.some(t => hav(t[3], t[4], s[3], s[4]) * 1000 < SITE_M)); if(g) g.push(s); else groups.push([s]); }
+  groups.forEach(g => { const ids = g.map(sid); ids.forEach(x => siteOf.set(x, ids)); });
+  const last = fs.map(s => live[sid(s)] && live[sid(s)].at).filter(Boolean).sort().pop();
+  box.innerHTML = `<div class="favhead"><span class="meta">${fs.length} istasyon${last ? ' · canlı veri ' + new Date(last).toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'}) : ''}</span><button class="linkbtn" type="button" id="favRefresh">Hepsini yenile</button></div>
+  <div class="favwrap"><table class="fav">
+    <colgroup><col><col class="c-kw"><col class="c-n"><col class="c-n"><col class="c-p"></colgroup>
+    <thead><tr><th scope="col">İstasyon</th><th scope="col">kW</th><th scope="col">AC<small>boş/top.</small></th><th scope="col">DC<small>boş/top.</small></th><th scope="col">Fiyat<small>₺/kWh</small></th></tr></thead>
+    <tbody>${fs.map(s => `<tr data-ll="${sid(s)}">${favCells(s)}</tr>`).join('')}</tbody>
+  </table></div>`;
+  if(liveEnabled()) groups.forEach(g => queueLive(sid(g[0])));
+}
 
 function parseCoord(t){
   const m = /(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/.exec(t);
@@ -517,7 +706,9 @@ $('gps').addEventListener('click', () => {
   $('gps').textContent = 'Konum alınıyor…';
   navigator.geolocation.getCurrentPosition(p => {
     $('gps').textContent = 'Konumum';
-    setHere(p.coords.latitude, p.coords.longitude, 'Bulunduğunuz yer');
+    const lat = p.coords.latitude, lng = p.coords.longitude;
+    view = 'near'; setHere(lat, lng, 'Konumunuz');
+    placeName(lat, lng).then(n => setLabel(lat, lng, n));
   }, () => {
     $('gps').textContent = 'Konumum';
     showMsg('Konum alınamadı. Bu görünümde konum kapalı olabilir: il / ilçe seçin, koordinat yapıştırın veya sayfayı kendi adresinizden açın.');
@@ -530,19 +721,31 @@ $('il').addEventListener('change', e => fillIlce(e.target.value));
 $('ilce').addEventListener('change', e => {
   const il = $('il').value, d = e.target.value; if(!d) return;
   const [lat, lng] = districts[il][d];
-  setHere(lat, lng, title(d) + ', ' + title(il) + ' (ilçe merkezi)');
+  view = 'near'; setHere(lat, lng, title(d) + ', ' + title(il) + ' (ilçe merkezi)');
 });
 $('coordGo').addEventListener('click', () => {
   const c = parseCoord($('coord').value);
   if(!c){ showMsg('Koordinat okunamadı. Örnek: 41.0082, 28.9784'); return; }
-  showMsg(''); setHere(c[0], c[1], c[0].toFixed(4) + ', ' + c[1].toFixed(4));
+  showMsg(''); view = 'near'; setHere(c[0], c[1], c[0].toFixed(4) + ', ' + c[1].toFixed(4));
 });
 document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
-  mode = c.dataset.f; document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', x === c)); shown = 20; render();
+  mode = c.dataset.f; document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', x === c)); shown = 20; view = 'near'; render();
 }));
-$('minkw').addEventListener('change', () => { shown = 20; render(); });
-$('brand').addEventListener('change', () => { shown = 20; render(); });
+$('minkw').addEventListener('change', () => { shown = 20; view = 'near'; render(); });
+$('brand').addEventListener('change', () => { shown = 20; view = 'near'; render(); });
 $('more').addEventListener('click', () => { shown += 20; render(); });
+document.querySelector('.views').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if(!b) return; view = b.dataset.view; render(); });
+$('favView').addEventListener('click', e => { if(e.target.id === 'favRefresh') favStations().forEach((s, i, arr) => { const id = sid(s), site = siteOf.get(id) || [id]; if(site[0] === id) queueLive(id, true); }); });
+$('list').addEventListener('click', e => {
+  const b = e.target.closest('[data-fav]'); if(!b) return;
+  toggleFav(b.dataset.fav);
+  const on = favs.includes(b.dataset.fav);
+  b.setAttribute('aria-pressed', on); b.setAttribute('aria-label', on ? 'Favorilerden çıkar' : 'Favorilere ekle');
+  toast(on ? 'Favorilere eklendi' : 'Favorilerden çıkarıldı');
+});
+let qTimer = 0;
+$('q').addEventListener('input', () => { clearTimeout(qTimer); qTimer = setTimeout(() => { shown = 20; view = 'near'; render(); }, 250); });
+$('q').addEventListener('keydown', e => { if(e.key === 'Enter') e.target.blur(); });
 $('list').addEventListener('click', e => { const b = e.target.closest('[data-refresh]'); if(b) queueLive(b.dataset.refresh, true); });
 $('gkey').value = store.get('sp_gkey') || '';
 $('gon').checked = store.get('sp_gon') !== '0';
@@ -589,8 +792,9 @@ async function refresh(){
 
 // --- start
 buildDistricts(); fillBrands(); setSrc(false);
+view = favs.length ? 'fav' : 'near';
 let saved = null; try{ saved = JSON.parse(store.get('sp_loc')); }catch(e){}
-if(saved && saved.lat) setHere(saved.lat, saved.lng, saved.label, false);
+if(saved && saved.lat){ setHere(saved.lat, saved.lng, saved.label, false); if(/^(Bulunduğunuz yer|Konumunuz)$/.test(saved.label)) placeName(saved.lat, saved.lng).then(n => setLabel(saved.lat, saved.lng, n)); }
 else { const k = districts['İSTANBUL'] && districts['İSTANBUL']['KADIKÖY']; if(k) setHere(k[0], k[1], 'Kadıköy, İstanbul (örnek konum, değiştirin)', false); else render(); }
 refresh();
 </script>
