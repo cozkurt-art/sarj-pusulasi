@@ -262,6 +262,12 @@ table.fav{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;
         <input type="password" id="gkey" placeholder="Google Places API anahtarı" aria-label="Google Places API anahtarı" autocomplete="off">
         <button class="btn" id="gkeySave" type="button">Kaydet</button>
       </div>
+      <p><b>Başka cihaza taşı:</b> Anahtar ve favoriler yalnızca bu tarayıcıda saklanır. Aşağıdaki düğme ikisini de içeren bir bağlantı oluşturur; bağlantıyı diğer cihazda açın ya da oradaki kutuya yapıştırın. Bağlantıda Google anahtarınız da olduğu için yalnızca kendinize gönderin.</p>
+      <div class="row"><button class="btn" id="exportBtn" type="button">Taşıma bağlantısı oluştur</button></div>
+      <div class="row" style="margin-top:8px">
+        <input type="text" id="importTxt" placeholder="Taşıma bağlantısını buraya yapıştırın" aria-label="Taşıma bağlantısı" autocomplete="off">
+        <button class="btn" id="importBtn" type="button">Yükle</button>
+      </div>
     </details>
   </div>
 </main>
@@ -674,7 +680,7 @@ function renderFav(){
   const fs = favStations();
   const box = $('favView');
   if(!fs.length){
-    box.innerHTML = `<div class="favwrap"><div class="favempty">Henüz favori yok.<br>Yakındakiler listesinde bir kartın sağ üstündeki yıldıza dokunun; o istasyon burada tablo olarak görünür.</div></div>`;
+    box.innerHTML = `<div class="favwrap"><div class="favempty">Henüz favori yok.<br>Yakındakiler listesinde bir kartın sağ üstündeki yıldıza dokunun; o istasyon burada tablo olarak görünür.<br><br>Favorilerin başka bir cihazdaysa: orada sayfanın en altındaki <b>Canlı soket durumu</b> bölümünden taşıma bağlantısı oluştur ve bu cihazda aç.</div></div>`;
     return;
   }
   // favourites at the same site share one Google lookup
@@ -690,6 +696,25 @@ function renderFav(){
     <tbody>${fs.map(s => `<tr data-ll="${sid(s)}">${favCells(s)}</tr>`).join('')}</tbody>
   </table></div>`;
   if(liveEnabled()) groups.forEach(g => queueLive(sid(g[0])));
+}
+
+// --- Move the key and favourites to another device with one link (the data rides in the #fragment, never sent to a server)
+const b64e = t => btoa(unescape(encodeURIComponent(t))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const b64d = t => decodeURIComponent(escape(atob(t.replace(/-/g, '+').replace(/_/g, '/'))));
+function exportLink(){ return location.origin + location.pathname + '#ayar=' + b64e(JSON.stringify({k: store.get('sp_gkey') || '', f: favs})); }
+function importCode(t){
+  const m = /ayar=([A-Za-z0-9_-]+)/.exec(t || ''), code = m ? m[1] : String(t || '').trim();
+  try{
+    const j = JSON.parse(b64d(code));
+    if(j.k) store.set('sp_gkey', j.k);
+    const add = Array.isArray(j.f) ? j.f.filter(k => typeof k === 'string') : [];
+    if(add.length){ favs = [...new Set(favs.concat(add))]; store.set('sp_favs', JSON.stringify(favs)); }
+    $('gkey').value = store.get('sp_gkey') || '';
+    toast('Yüklendi: ' + [j.k ? 'Google anahtarı' : '', add.length ? add.length + ' favori' : ''].filter(Boolean).join(', '));
+    if(favs.length) view = 'fav';
+    render();
+    return true;
+  }catch(e){ toast('Bağlantı okunamadı. Tamamını kopyaladığınızdan emin olun.'); return false; }
 }
 
 function parseCoord(t){
@@ -734,6 +759,13 @@ document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () =
 $('minkw').addEventListener('change', () => { shown = 20; view = 'near'; render(); });
 $('brand').addEventListener('change', () => { shown = 20; view = 'near'; render(); });
 $('more').addEventListener('click', () => { shown += 20; render(); });
+$('exportBtn').addEventListener('click', async () => {
+  const link = exportLink();
+  if(navigator.share){ try{ await navigator.share({title: 'Şarj Pusulası ayarları', url: link}); return; }catch(e){ if(e && e.name === 'AbortError') return; } }
+  try{ await navigator.clipboard.writeText(link); toast('Bağlantı kopyalandı. Kendinize gönderip diğer cihazda açın.'); }
+  catch(e){ $('importTxt').value = link; $('importTxt').select(); toast('Bağlantıyı kutudan kopyalayın.'); }
+});
+$('importBtn').addEventListener('click', () => { if(importCode($('importTxt').value)) $('importTxt').value = ''; });
 document.querySelector('.views').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if(!b) return; view = b.dataset.view; render(); });
 $('favView').addEventListener('click', e => { if(e.target.id === 'favRefresh') favStations().forEach((s, i, arr) => { const id = sid(s), site = siteOf.get(id) || [id]; if(site[0] === id) queueLive(id, true); }); });
 $('list').addEventListener('click', e => {
@@ -793,6 +825,7 @@ async function refresh(){
 // --- start
 buildDistricts(); fillBrands(); setSrc(false);
 view = favs.length ? 'fav' : 'near';
+if(/^#ayar=/.test(location.hash)){ const h = location.hash; history.replaceState(null, '', location.pathname + location.search); setTimeout(() => importCode(h), 0); }
 let saved = null; try{ saved = JSON.parse(store.get('sp_loc')); }catch(e){}
 if(saved && saved.lat){ setHere(saved.lat, saved.lng, saved.label, false); if(/^(Bulunduğunuz yer|Konumunuz)$/.test(saved.label)) placeName(saved.lat, saved.lng).then(n => setLabel(saved.lat, saved.lng, n)); }
 else { const k = districts['İSTANBUL'] && districts['İSTANBUL']['KADIKÖY']; if(k) setHere(k[0], k[1], 'Kadıköy, İstanbul (örnek konum, değiştirin)', false); else render(); }
