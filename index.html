@@ -377,7 +377,7 @@ function render(){
   rows.slice(0, shown).forEach(([, s]) => stByLl.set(sid(s), s));
   const page = arrange(rows.slice(0, shown));
   list.innerHTML = page.map(([d, s, g], i) => card(d, s, i, !!key && gon, road && road.ok ? road.m.get(s) : null, g)).join('');
-  observeLive();
+  showQuota();
   list.style.display = 'grid'; list.style.gap = '12px';
   $('more').hidden = rows.length <= shown;
 }
@@ -468,7 +468,7 @@ function card(d0, s, i, hasKey, rd, g){
       <a class="btn" href="${abrp}" target="_blank" rel="noopener" data-abrp="${esc(s[0] + ' ' + name)}">ABRP'de aç</a>
       ${app ? `<a class="btn" href="${app}" target="_blank" rel="noopener">${esc(name)} uygulaması</a>` : ''}
     </div>
-    <div class="live">${liveText[id] || (liveEnabled() ? `<button class="linkbtn" type="button" data-refresh="${id}">Canlı durumu göster</button>` : '')}</div>
+    <div class="live">${liveText[id] || (liveEnabled() ? `<button class="linkbtn" type="button" data-refresh="${id}">Canlı durumu sorgula</button>` : '')}</div>
   </article>`;
 }
 
@@ -508,7 +508,7 @@ function arrange(page){
 const LIVE_BONUS = 1, AUTO_KM = 5;
 function liveKnown(s){ const lv = live[sid(s)]; return !!(lv && (lv.ac || lv.dc || lv.hpc)); }
 // Free tier: Google gives 1,000 of these lookups a month, so the page stays under 30 a day
-const LIVE_TTL = 5 * 60 * 1000, ERR_TTL = 60 * 1000, AUTO_N = 3, DAILY_MAX = 30, NOLIVE_DAYS = 7, livePending = new Set(), liveQueue = [];
+const LIVE_TTL = 60 * 60 * 1000, ERR_TTL = 60 * 1000, AUTO_N = 3, DAILY_MAX = 30, NOLIVE_DAYS = 7, livePending = new Set(), liveQueue = [];
 let liveActive = 0;
 const liveEnabled = () => !!store.get('sp_gkey') && store.get('sp_gon') !== '0';
 const jget = (k, d) => { try{ return JSON.parse(store.get(k)) || d; }catch(e){ return d; } };
@@ -542,9 +542,16 @@ function queueLive(id, force){
   if(quotaLeft() <= 0){ site.forEach(x => { liveText[x] = `<span class="meta">Bugünkü ${DAILY_MAX} canlı sorgu hakkı doldu; yarın yenilenir.</span>`; paintLive(x); }); return; }
   site.forEach(x => livePending.add(x)); liveQueue.push([id, site]); pumpLive();
 }
+function showQuota(){
+  let el = $('quota');
+  if(!el){ el = document.createElement('div'); el.id = 'quota'; el.className = 'summary'; $('summary').after(el); }
+  el.hidden = !liveEnabled();
+  const n = quotaLeft();
+  el.textContent = `Canlı sorgu hakkı bugün: ${Math.max(0, n)} / ${DAILY_MAX}. Sorgu yalnızca düğmeye bastığınızda yapılır.`;
+}
 function pumpLive(){
   while(liveActive < 2 && liveQueue.length){
-    const [id, site] = liveQueue.shift(); liveActive++; useQuota();
+    const [id, site] = liveQueue.shift(); liveActive++; useQuota(); showQuota();
     fetchLive(id, site).finally(() => { liveActive--; site.forEach(x => livePending.delete(x)); saveLive(); pumpLive(); });
   }
 }
@@ -606,7 +613,7 @@ async function fetchLive(id, site){
     members.forEach(([x]) => { live[x] = {at: Date.now(), err: true}; liveText[x] = `<span class="meta">${msg}</span>` + refreshBtn(x); });
   }finally{ members.forEach(([x]) => paintLive(x)); }
 }
-document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible' && here) observeLive(); });
+// Google is asked only when you tap a refresh button; nothing runs on open or when you come back to the tab
 
 // --- Readable name for a GPS position: OpenStreetMap first, nearest district as fallback
 async function placeName(lat, lng){
@@ -689,13 +696,13 @@ function renderFav(){
   for(const s of fs){ stByLl.set(sid(s), s); const g = groups.find(g => g.some(t => hav(t[3], t[4], s[3], s[4]) * 1000 < SITE_M)); if(g) g.push(s); else groups.push([s]); }
   groups.forEach(g => { const ids = g.map(sid); ids.forEach(x => siteOf.set(x, ids)); });
   const last = fs.map(s => live[sid(s)] && live[sid(s)].at).filter(Boolean).sort().pop();
-  box.innerHTML = `<div class="favhead"><span class="meta">${fs.length} istasyon${last ? ' · canlı veri ' + new Date(last).toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'}) : ''}</span><button class="linkbtn" type="button" id="favRefresh">Hepsini yenile</button></div>
+  box.innerHTML = `<div class="favhead"><span class="meta">${fs.length} istasyon${last ? ' · canlı veri ' + new Date(last).toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'}) : ''}</span>${liveEnabled() ? `<button class="linkbtn" type="button" id="favRefresh">Hepsini yenile (${groups.length} sorgu)</button>` : ''}</div>
   <div class="favwrap"><table class="fav">
     <colgroup><col><col class="c-kw"><col class="c-n"><col class="c-n"><col class="c-p"></colgroup>
     <thead><tr><th scope="col">İstasyon</th><th scope="col">kW</th><th scope="col">AC<small>boş/top.</small></th><th scope="col">DC<small>boş/top.</small></th><th scope="col">Fiyat<small>₺/kWh</small></th></tr></thead>
     <tbody>${fs.map(s => `<tr data-ll="${sid(s)}">${favCells(s)}</tr>`).join('')}</tbody>
   </table></div>`;
-  if(liveEnabled()) groups.forEach(g => queueLive(sid(g[0])));
+  showQuota();
 }
 
 // --- Move the key and favourites to another device with one link (the data rides in the #fragment, never sent to a server)
