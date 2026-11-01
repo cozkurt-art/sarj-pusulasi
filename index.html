@@ -201,6 +201,7 @@ table.fav{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;
   details.settings{border-radius:18px;font-size:16px}
   details.settings p{font-size:15px}
 }
+.gdet{margin-top:6px;font-size:13.5px}.gdet summary{cursor:pointer;color:var(--accent);font-weight:500}.gdet .meta{display:block;margin-top:3px}
 </style>
 
 <header>
@@ -577,6 +578,15 @@ function paintLive(id){
   });
 }
 const hhmm = iso => new Date(iso).toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'});
+const STALE_MIN = 60;
+function ago(iso){
+  const m = Math.round((Date.now() - Date.parse(iso)) / 60000);
+  if(!(m >= 0)) return hhmm(iso);
+  if(m < 1) return 'az önce';
+  if(m < 60) return m + ' dk önce';
+  if(m < 48 * 60) return Math.floor(m / 60) + ' sa önce (' + hhmm(iso) + ')';
+  return Math.floor(m / 1440) + ' gün önce';
+}
 async function fetchLive(id, site){
   const s0 = stByLl.get(id), members = site.map(x => [x, stByLl.get(x)]).filter(m => m[1]);
   members.forEach(([x]) => { if(!live[x] || live[x].err){ liveText[x] = '<span class="meta">Canlı durum alınıyor…</span>'; paintLive(x); } });
@@ -592,18 +602,29 @@ async function fetchLive(id, site){
       let p = places.filter(q => brandMatch(bname, q.displayName && q.displayName.text)).sort((a, b) => far(a, s) - far(b, s))[0];
       if(!p && members.length === 1 && places.length === 1) p = places[0];
       if(!p){ live[x] = {at: Date.now()}; liveText[x] = `<span class="meta">${places.length ? 'Google\'da bu operatöre ait kayıt eşleşmedi.' : 'Google bu noktada soket bilgisi vermiyor.'}</span>`; continue; }
-      const acc = {ac: null, dc: null, hpc: null};
+      const acc = {ac: null, dc: null, hpc: null}, det = [];
+      const TL = {EV_CONNECTOR_TYPE_TYPE_2: 'AC Type 2', EV_CONNECTOR_TYPE_J1772: 'AC', EV_CONNECTOR_TYPE_CCS_COMBO_2: 'CCS', EV_CONNECTOR_TYPE_CHADEMO: 'CHAdeMO', EV_CONNECTOR_TYPE_TESLA: 'Tesla'};
       for(const a of p.evChargeOptions.connectorAggregation){
+        det.push(`${TL[a.type] || 'Soket'}${a.maxChargeRateKw ? ' ' + Math.round(a.maxChargeRateKw) + ' kW' : ''}: ${a.availableCount == null ? 'doluluk yok' : a.availableCount + '/' + a.count + ' boş'}${a.outOfServiceCount ? ', ' + a.outOfServiceCount + ' arızalı' : ''} · ${a.availabilityLastUpdateTime ? ago(a.availabilityLastUpdateTime) : 'zaman yok'}`);
         if(a.availableCount == null) continue;
         let k = a.type === 'EV_CONNECTOR_TYPE_TYPE_2' || a.type === 'EV_CONNECTOR_TYPE_J1772' ? 'ac' : ((a.maxChargeRateKw || 0) >= 150 ? 'hpc' : 'dc');
         if(k === 'hpc' && !s[9] && s[7]) k = 'dc'; else if(k === 'dc' && !s[7] && s[9]) k = 'hpc';
         const o = acc[k] || (acc[k] = {avail: 0, count: 0, oos: 0});
         o.avail += a.availableCount; o.count += a.count || 0; o.oos += a.outOfServiceCount || 0;
       }
-      const has = !!(acc.ac || acc.dc || acc.hpc), ts = p.evChargeOptions.connectorAggregation.map(a => a.availabilityLastUpdateTime).filter(Boolean).sort().pop();
-      live[x] = Object.assign({at: Date.now()}, acc);
+      const has = !!(acc.ac || acc.dc || acc.hpc);
+      // Oldest timestamp among the connectors Google reports a count for: that is how old the picture really is
+      const tsAll = p.evChargeOptions.connectorAggregation.filter(a => a.availableCount != null).map(a => a.availabilityLastUpdateTime);
+      const oldest = tsAll.length && tsAll.every(Boolean) ? tsAll.slice().sort()[0] : null;
+      const stale = has && (!oldest || Date.now() - Date.parse(oldest) > STALE_MIN * 60000);
+      live[x] = stale ? {at: Date.now(), stale: true} : Object.assign({at: Date.now()}, acc);
       markBrand(bname, has);
-      liveText[x] = has ? `<span class="meta">Canlı · Google${ts ? ' · ' + hhmm(ts) : ''}</span>` + refreshBtn(x) : `<span class="meta">${esc(bname)} canlı doluluk paylaşmıyor.</span>`;
+      const pname = p.displayName ? esc(p.displayName.text) : 'Google kaydı', pm = Math.round(far(p, s) * 1000);
+      const head = !has ? `${esc(bname)} canlı doluluk paylaşmıyor.`
+        : stale ? `<b>Eski veri:</b> Google bu istasyonu ${oldest ? ago(oldest) : 'bilinmeyen bir zamanda'} güncellemiş, halkalar boyanmadı.`
+        : `Canlı · Google · ${ago(oldest)} güncellendi`;
+      liveText[x] = `<span class="meta">${head}</span>` + refreshBtn(x) +
+        `<details class="gdet"><summary>Google ne diyor?</summary><div class="meta">${pname} · ${pm} m uzakta</div>${det.map(l => `<div class="meta">${esc(l)}</div>`).join('')}<div class="meta">Sorgu: ${hhmm(new Date().toISOString())}</div></details>`;
     }
   }catch(e){
     const m = e.message || '';
